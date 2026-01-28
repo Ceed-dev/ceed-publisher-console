@@ -37,12 +37,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const user = await signInWithGoogle();
       const idToken = await getIdToken();
 
-      if (idToken) {
-        await fetch('/api/auth/session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ idToken }),
-        });
+      if (!idToken) {
+        throw new Error('Failed to get ID token');
+      }
+
+      const response = await fetch('/api/auth/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to create session');
       }
 
       setUser(user);

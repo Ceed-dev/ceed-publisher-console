@@ -25,11 +25,11 @@ export default function LoginPage() {
 
     try {
       await signIn();
-      router.replace('/apps');
+      // Use window.location for hard navigation to ensure cookie is picked up
+      window.location.href = '/apps';
     } catch (err) {
       setError('Failed to sign in. Please try again.');
       console.error('Sign in error:', err);
-    } finally {
       setIsSigningIn(false);
     }
   };
