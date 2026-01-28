@@ -114,6 +114,12 @@ A media-side dashboard for publishers integrating the Ceed Ads SDK. Partners can
 - Light/Dark mode toggle
 - Persisted via next-themes
 
+### Performance Optimizations
+- **Client-side caching** - API responses cached for 30-60 seconds
+- **Stale-while-revalidate** - Shows cached data immediately while fetching fresh data
+- **Smart loading states** - Only shows spinners on initial load, subtle "Updating..." indicator for refreshes
+- **No full-page spinners** - Previous data remains visible during navigation and time range changes
+
 ---
 
 ## Getting Started
