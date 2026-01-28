@@ -11,8 +11,13 @@ export async function createEvent(
   const eventRef = db.collection(COLLECTION).doc();
   const now = Timestamp.now();
 
+  // Filter out undefined values for Firestore compatibility
+  const cleanData = Object.fromEntries(
+    Object.entries(data).filter(([, value]) => value !== undefined)
+  ) as Omit<AdEvent, 'eventId' | 'meta'>;
+
   const event: AdEvent = {
-    ...data,
+    ...cleanData,
     eventId: eventRef.id,
     meta: {
       createdAt: now,

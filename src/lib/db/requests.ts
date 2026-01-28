@@ -9,8 +9,13 @@ export async function createRequest(data: Omit<AdRequest, 'requestId' | 'meta'>)
   const requestRef = db.collection(COLLECTION).doc();
   const now = Timestamp.now();
 
+  // Filter out undefined values for Firestore compatibility
+  const cleanData = Object.fromEntries(
+    Object.entries(data).filter(([, value]) => value !== undefined)
+  ) as Omit<AdRequest, 'requestId' | 'meta'>;
+
   const request: AdRequest = {
-    ...data,
+    ...cleanData,
     requestId: requestRef.id,
     meta: {
       createdAt: now,
