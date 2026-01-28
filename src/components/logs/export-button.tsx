@@ -6,6 +6,7 @@ import { generateCSV, downloadCSV } from '@/lib/utils/csv-export';
 import { AdRequest } from '@/types/request';
 import { AdEvent } from '@/types/event';
 import { format } from 'date-fns';
+import { timestampToDate } from '@/lib/utils/timestamp';
 
 interface ExportButtonProps {
   data: AdRequest[] | AdEvent[];
@@ -29,7 +30,7 @@ export function ExportButton({ data, type, appId }: ExportButtonProps) {
           responseTimeMs: r.responseTimeMs || '',
           origin: r.origin || '',
           errorCode: r.errorCode || '',
-          createdAt: format(r.meta.createdAt.toDate(), 'yyyy-MM-dd HH:mm:ss'),
+          createdAt: format(timestampToDate(r.meta.createdAt), 'yyyy-MM-dd HH:mm:ss'),
         })),
         [
           { key: 'requestId', header: 'Request ID' },
@@ -52,7 +53,7 @@ export function ExportButton({ data, type, appId }: ExportButtonProps) {
           requestId: e.requestId,
           adId: e.adId || '',
           origin: e.origin || '',
-          createdAt: format(e.meta.createdAt.toDate(), 'yyyy-MM-dd HH:mm:ss'),
+          createdAt: format(timestampToDate(e.meta.createdAt), 'yyyy-MM-dd HH:mm:ss'),
         })),
         [
           { key: 'eventId', header: 'Event ID' },

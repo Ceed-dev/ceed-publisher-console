@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
+import { timestampToDate } from '@/lib/utils/timestamp';
 
 interface EventsTableProps {
   events: AdEvent[];
@@ -76,7 +77,7 @@ export function EventsTable({ events, loading }: EventsTableProps) {
               {event.origin || '-'}
             </TableCell>
             <TableCell>
-              {format(event.meta.createdAt.toDate(), 'MMM d, HH:mm:ss')}
+              {format(timestampToDate(event.meta.createdAt), 'MMM d, HH:mm:ss')}
             </TableCell>
           </TableRow>
         ))}

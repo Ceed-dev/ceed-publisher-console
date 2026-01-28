@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/dialog';
 import { Plus, Loader2, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
+import { timestampToDate } from '@/lib/utils/timestamp';
 
 export default function MembersPage() {
   const { currentOrg } = useOrganization();
@@ -213,7 +214,7 @@ export default function MembersPage() {
                   />
                 </TableCell>
                 <TableCell>
-                  {format(member.meta.createdAt.toDate(), 'MMM d, yyyy')}
+                  {format(timestampToDate(member.meta.createdAt), 'MMM d, yyyy')}
                 </TableCell>
                 <TableCell>
                   <Button

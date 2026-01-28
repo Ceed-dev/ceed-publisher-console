@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { ExternalLink } from 'lucide-react';
+import { timestampToDate } from '@/lib/utils/timestamp';
 import Link from 'next/link';
 
 interface RequestsTableProps {
@@ -79,7 +80,7 @@ export function RequestsTable({ requests, loading, appId }: RequestsTableProps) 
               {request.responseTimeMs ? `${request.responseTimeMs}ms` : '-'}
             </TableCell>
             <TableCell>
-              {format(request.meta.createdAt.toDate(), 'MMM d, HH:mm:ss')}
+              {format(timestampToDate(request.meta.createdAt), 'MMM d, HH:mm:ss')}
             </TableCell>
             <TableCell>
               <Link href={`/apps/${appId}/logs?requestId=${request.requestId}&tab=events`}>
