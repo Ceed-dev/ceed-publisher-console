@@ -17,7 +17,7 @@ export function Sidebar() {
   const { signOut } = useAuth();
 
   return (
-    <aside className="flex h-screen w-64 flex-col border-r bg-card">
+    <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r bg-card">
       <div className="flex h-16 items-center border-b px-4">
         <Link href="/apps" className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold">
