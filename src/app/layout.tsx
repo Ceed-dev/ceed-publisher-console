@@ -4,6 +4,7 @@ import './globals.css';
 import { ThemeProvider } from '@/contexts/theme-context';
 import { AuthProvider } from '@/contexts/auth-context';
 import { OrganizationProvider } from '@/contexts/organization-context';
+import { QueryProvider } from '@/lib/query-client';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -20,11 +21,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider>
-          <AuthProvider>
-            <OrganizationProvider>{children}</OrganizationProvider>
-          </AuthProvider>
-        </ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider>
+            <AuthProvider>
+              <OrganizationProvider>{children}</OrganizationProvider>
+            </AuthProvider>
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   );

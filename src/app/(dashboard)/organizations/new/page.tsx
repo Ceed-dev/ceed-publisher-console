@@ -12,7 +12,7 @@ import { ArrowLeft, Loader2 } from 'lucide-react';
 
 export default function NewOrganizationPage() {
   const router = useRouter();
-  const { refreshOrganizations } = useOrganization();
+  const { setCurrentOrg } = useOrganization();
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -40,7 +40,12 @@ export default function NewOrganizationPage() {
         throw new Error(data.error || 'Failed to create organization');
       }
 
-      await refreshOrganizations();
+      const data = await response.json();
+      // Set the newly created org as current
+      if (data.organization) {
+        setCurrentOrg(data.organization);
+      }
+      // Real-time listener will automatically update the organizations list
       router.push('/apps');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create organization');

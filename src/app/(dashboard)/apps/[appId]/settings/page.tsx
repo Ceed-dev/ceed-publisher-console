@@ -1,40 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { App, AppSettings } from '@/types/app';
+import { AppSettings } from '@/types/app';
 import { Header } from '@/components/layout/header';
 import { SettingsForm } from '@/components/apps/settings-form';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useRealtimeApp } from '@/hooks/use-realtime-app';
 import { ArrowLeft, AlertTriangle } from 'lucide-react';
 
 export default function SettingsPage() {
   const params = useParams();
   const appId = params.appId as string;
 
-  const [app, setApp] = useState<App | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchApp = async () => {
-      try {
-        const response = await fetch(`/api/dashboard/apps/${appId}`);
-        if (response.ok) {
-          const data = await response.json();
-          setApp(data.app);
-        }
-      } catch (error) {
-        console.error('Failed to fetch app:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchApp();
-  }, [appId]);
+  const { app, loading, error } = useRealtimeApp(appId);
 
   const handleSave = async (settings: Partial<AppSettings>) => {
     const response = await fetch(`/api/dashboard/apps/${appId}`, {
@@ -47,25 +28,19 @@ export default function SettingsPage() {
       const data = await response.json();
       throw new Error(data.error || 'Failed to save settings');
     }
-
-    const data = await response.json();
-    setApp(data.app);
+    // Real-time listener will automatically update the app data
   };
 
   const handleStatusToggle = async () => {
     if (!app) return;
 
     const newStatus = app.status === 'active' ? 'suspended' : 'active';
-    const response = await fetch(`/api/dashboard/apps/${appId}`, {
+    await fetch(`/api/dashboard/apps/${appId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: newStatus }),
     });
-
-    if (response.ok) {
-      const data = await response.json();
-      setApp(data.app);
-    }
+    // Real-time listener will automatically update the app data
   };
 
   if (loading) {
@@ -76,13 +51,13 @@ export default function SettingsPage() {
     );
   }
 
-  if (!app) {
+  if (!app || error) {
     return (
       <div className="flex min-h-screen flex-col">
         <Header title="App Not Found" />
         <div className="flex flex-1 items-center justify-center">
           <p className="text-muted-foreground">
-            The app you are looking for does not exist.
+            {error || 'The app you are looking for does not exist.'}
           </p>
         </div>
       </div>

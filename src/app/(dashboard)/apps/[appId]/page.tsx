@@ -1,16 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { App } from '@/types/app';
 import { TimeRange } from '@/types/analytics';
 import { Header } from '@/components/layout/header';
 import { KPIGrid } from '@/components/analytics/kpi-grid';
 import { TimeRangePicker } from '@/components/analytics/time-range-picker';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { useAnalytics } from '@/hooks/use-analytics';
+import { useRealtimeApp } from '@/hooks/use-realtime-app';
+import { useAnalyticsQuery } from '@/hooks/use-analytics-query';
 import { startOfDay, endOfDay, subDays } from 'date-fns';
 import { Settings, FileText, Code, BarChart3 } from 'lucide-react';
 
@@ -18,35 +18,18 @@ export default function AppOverviewPage() {
   const params = useParams();
   const appId = params.appId as string;
 
-  const [app, setApp] = useState<App | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { app, loading, error: appError } = useRealtimeApp(appId);
   const [timeRange, setTimeRange] = useState<TimeRange>({
     startDate: startOfDay(subDays(new Date(), 7)),
     endDate: endOfDay(new Date()),
   });
 
-  const { metrics, loading: analyticsLoading, isRefreshing, error: analyticsError } = useAnalytics({
-    appId,
-    timeRange,
-  });
-
-  useEffect(() => {
-    const fetchApp = async () => {
-      try {
-        const response = await fetch(`/api/dashboard/apps/${appId}`);
-        if (response.ok) {
-          const data = await response.json();
-          setApp(data.app);
-        }
-      } catch (error) {
-        console.error('Failed to fetch app:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchApp();
-  }, [appId]);
+  const {
+    data: metrics,
+    isLoading: analyticsLoading,
+    isFetching: analyticsRefreshing,
+    error: analyticsError,
+  } = useAnalyticsQuery({ appId, timeRange });
 
   if (loading) {
     return (
@@ -56,13 +39,13 @@ export default function AppOverviewPage() {
     );
   }
 
-  if (!app) {
+  if (!app || appError) {
     return (
       <div className="flex min-h-screen flex-col">
         <Header title="App Not Found" />
         <div className="flex flex-1 items-center justify-center">
           <p className="text-muted-foreground">
-            The app you are looking for does not exist.
+            {appError || 'The app you are looking for does not exist.'}
           </p>
         </div>
       </div>
@@ -107,7 +90,12 @@ export default function AppOverviewPage() {
           </div>
 
           <TabsContent value="overview" className="space-y-6">
-            <KPIGrid metrics={metrics} loading={analyticsLoading} isRefreshing={isRefreshing} error={analyticsError} />
+            <KPIGrid
+              metrics={metrics || null}
+              loading={analyticsLoading}
+              isRefreshing={analyticsRefreshing && !analyticsLoading}
+              error={analyticsError ? String(analyticsError) : null}
+            />
           </TabsContent>
         </Tabs>
       </div>

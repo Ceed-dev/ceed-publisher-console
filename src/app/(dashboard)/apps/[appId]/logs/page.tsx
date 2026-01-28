@@ -1,11 +1,8 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { App } from '@/types/app';
-import { AdRequest } from '@/types/request';
-import { AdEvent } from '@/types/event';
 import { Header } from '@/components/layout/header';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -13,6 +10,8 @@ import { RequestsTable } from '@/components/logs/requests-table';
 import { EventsTable } from '@/components/logs/events-table';
 import { LogFilters } from '@/components/logs/log-filters';
 import { ExportButton } from '@/components/logs/export-button';
+import { useRealtimeApp } from '@/hooks/use-realtime-app';
+import { useRequestLogsQuery, useEventLogsQuery } from '@/hooks/use-logs-query';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
 
 export default function LogsPage() {
@@ -23,10 +22,8 @@ export default function LogsPage() {
   const initialTab = searchParams.get('tab') || 'requests';
   const initialRequestId = searchParams.get('requestId') || '';
 
-  const [app, setApp] = useState<App | null>(null);
+  const { app, loading: appLoading } = useRealtimeApp(appId);
   const [activeTab, setActiveTab] = useState(initialTab);
-  const [requests, setRequests] = useState<AdRequest[]>([]);
-  const [events, setEvents] = useState<AdEvent[]>([]);
   const [requestFilters, setRequestFilters] = useState<{
     status?: string;
     platform?: string;
@@ -36,82 +33,41 @@ export default function LogsPage() {
     eventType?: string;
     search?: string;
   }>({ search: initialRequestId });
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
 
-  const fetchRequests = useCallback(async () => {
-    try {
-      const queryParams = new URLSearchParams();
-      if (requestFilters.status) queryParams.set('status', requestFilters.status);
-      if (requestFilters.platform) queryParams.set('platform', requestFilters.platform);
+  const {
+    data: requests = [],
+    isLoading: requestsLoading,
+    isFetching: requestsRefreshing,
+    refetch: refetchRequests,
+  } = useRequestLogsQuery(appId, {
+    status: requestFilters.status,
+    platform: requestFilters.platform,
+  });
 
-      const response = await fetch(
-        `/api/dashboard/apps/${appId}/logs/requests?${queryParams}`
-      );
-      if (response.ok) {
-        const data = await response.json();
-        setRequests(data.requests);
-      }
-    } catch (error) {
-      console.error('Failed to fetch requests:', error);
-    }
-  }, [appId, requestFilters]);
-
-  const fetchEvents = useCallback(async () => {
-    try {
-      const queryParams = new URLSearchParams();
-      if (eventFilters.eventType) queryParams.set('eventType', eventFilters.eventType);
-      if (eventFilters.search) queryParams.set('requestId', eventFilters.search);
-
-      const response = await fetch(
-        `/api/dashboard/apps/${appId}/logs/events?${queryParams}`
-      );
-      if (response.ok) {
-        const data = await response.json();
-        setEvents(data.events);
-      }
-    } catch (error) {
-      console.error('Failed to fetch events:', error);
-    }
-  }, [appId, eventFilters]);
-
-  useEffect(() => {
-    const fetchApp = async () => {
-      try {
-        const response = await fetch(`/api/dashboard/apps/${appId}`);
-        if (response.ok) {
-          const data = await response.json();
-          setApp(data.app);
-        }
-      } catch (error) {
-        console.error('Failed to fetch app:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchApp();
-  }, [appId]);
-
-  useEffect(() => {
-    if (activeTab === 'requests') {
-      fetchRequests();
-    } else {
-      fetchEvents();
-    }
-  }, [activeTab, fetchRequests, fetchEvents]);
+  const {
+    data: events = [],
+    isLoading: eventsLoading,
+    isFetching: eventsRefreshing,
+    refetch: refetchEvents,
+  } = useEventLogsQuery(appId, {
+    eventType: eventFilters.eventType,
+    requestId: eventFilters.search,
+  });
 
   const handleRefresh = async () => {
-    setRefreshing(true);
     if (activeTab === 'requests') {
-      await fetchRequests();
+      await refetchRequests();
     } else {
-      await fetchEvents();
+      await refetchEvents();
     }
-    setRefreshing(false);
   };
 
-  if (loading) {
+  const isRefreshing =
+    activeTab === 'requests'
+      ? requestsRefreshing && !requestsLoading
+      : eventsRefreshing && !eventsLoading;
+
+  if (appLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
@@ -155,10 +111,10 @@ export default function LogsPage() {
                 variant="outline"
                 size="sm"
                 onClick={handleRefresh}
-                disabled={refreshing}
+                disabled={isRefreshing}
               >
                 <RefreshCw
-                  className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`}
+                  className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`}
                 />
                 Refresh
               </Button>
@@ -176,7 +132,13 @@ export default function LogsPage() {
               onChange={setRequestFilters}
               type="requests"
             />
-            <RequestsTable requests={requests} appId={appId} />
+            {requestsLoading ? (
+              <div className="flex items-center justify-center p-8">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+              </div>
+            ) : (
+              <RequestsTable requests={requests} appId={appId} />
+            )}
           </TabsContent>
 
           <TabsContent value="events" className="space-y-4">
@@ -185,7 +147,13 @@ export default function LogsPage() {
               onChange={setEventFilters}
               type="events"
             />
-            <EventsTable events={events} />
+            {eventsLoading ? (
+              <div className="flex items-center justify-center p-8">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+              </div>
+            ) : (
+              <EventsTable events={events} />
+            )}
           </TabsContent>
         </Tabs>
       </div>

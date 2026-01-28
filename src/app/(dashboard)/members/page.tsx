@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useState } from 'react';
 import { useOrganization } from '@/hooks/use-organization';
-import { OrganizationMember, MemberRole } from '@/types/member';
+import { useRealtimeMembers } from '@/hooks/use-realtime-members';
+import { MemberRole } from '@/types/member';
 import { Header } from '@/components/layout/header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,66 +27,21 @@ import {
 import { Plus, Loader2, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { timestampToDate } from '@/lib/utils/timestamp';
-import { getCached, setCache, invalidateCache } from '@/lib/utils/cache';
 
 export default function MembersPage() {
   const { currentOrg } = useOrganization();
-  const [members, setMembers] = useState<OrganizationMember[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { members, loading, error } = useRealtimeMembers(currentOrg?.orgId);
   const [showInviteDialog, setShowInviteDialog] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState<MemberRole>('developer');
   const [inviting, setInviting] = useState(false);
-  const [error, setError] = useState('');
-  const lastOrgId = useRef<string | null>(null);
-
-  const fetchMembers = async (skipCache = false) => {
-    if (!currentOrg) return;
-
-    const cacheKey = `members:${currentOrg.orgId}`;
-    const orgChanged = lastOrgId.current !== currentOrg.orgId;
-    lastOrgId.current = currentOrg.orgId;
-
-    // Check cache first
-    if (!skipCache) {
-      const cached = getCached<{ members: OrganizationMember[] }>(cacheKey, 60000);
-      if (cached) {
-        setMembers(cached.members);
-        setLoading(false);
-        return;
-      }
-    }
-
-    // Only show loading if org changed and we have no cached data
-    if (orgChanged && members.length === 0) {
-      setLoading(true);
-    }
-
-    try {
-      const response = await fetch(
-        `/api/dashboard/members?orgId=${currentOrg.orgId}`
-      );
-      if (response.ok) {
-        const data = await response.json();
-        setCache(cacheKey, data);
-        setMembers(data.members);
-      }
-    } catch (error) {
-      console.error('Failed to fetch members:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchMembers();
-  }, [currentOrg]);
+  const [inviteError, setInviteError] = useState('');
 
   const handleInvite = async () => {
     if (!currentOrg || !inviteEmail.trim()) return;
 
     setInviting(true);
-    setError('');
+    setInviteError('');
 
     try {
       const response = await fetch('/api/dashboard/members', {
@@ -103,20 +59,18 @@ export default function MembersPage() {
         throw new Error(data.error || 'Failed to invite member');
       }
 
-      invalidateCache(`members:${currentOrg.orgId}`);
-      await fetchMembers(true);
+      // Real-time listener will automatically update the members list
       setShowInviteDialog(false);
       setInviteEmail('');
       setInviteRole('developer');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to invite member');
+      setInviteError(err instanceof Error ? err.message : 'Failed to invite member');
     } finally {
       setInviting(false);
     }
   };
 
   const handleRoleChange = async (memberId: string, newRole: MemberRole) => {
-    if (!currentOrg) return;
     try {
       const response = await fetch(`/api/dashboard/members/${memberId}`, {
         method: 'PATCH',
@@ -124,20 +78,17 @@ export default function MembersPage() {
         body: JSON.stringify({ role: newRole }),
       });
 
-      if (response.ok) {
-        invalidateCache(`members:${currentOrg.orgId}`);
-        await fetchMembers(true);
-      } else {
+      if (!response.ok) {
         const data = await response.json();
         alert(data.error || 'Failed to update role');
       }
+      // Real-time listener will automatically update the members list
     } catch (error) {
       console.error('Failed to update role:', error);
     }
   };
 
   const handleRemove = async (memberId: string) => {
-    if (!currentOrg) return;
     if (!confirm('Are you sure you want to remove this member?')) return;
 
     try {
@@ -145,13 +96,11 @@ export default function MembersPage() {
         method: 'DELETE',
       });
 
-      if (response.ok) {
-        invalidateCache(`members:${currentOrg.orgId}`);
-        await fetchMembers(true);
-      } else {
+      if (!response.ok) {
         const data = await response.json();
         alert(data.error || 'Failed to remove member');
       }
+      // Real-time listener will automatically update the members list
     } catch (error) {
       console.error('Failed to remove member:', error);
     }
@@ -186,6 +135,17 @@ export default function MembersPage() {
           <p className="text-muted-foreground">
             Select an organization to manage team members
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <Header title="Team" description={`Manage members of ${currentOrg.name}`} />
+        <div className="flex flex-1 items-center justify-center">
+          <p className="text-destructive">Error loading members: {error}</p>
         </div>
       </div>
     );
@@ -292,7 +252,7 @@ export default function MembersPage() {
                 ]}
               />
             </div>
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {inviteError && <p className="text-sm text-destructive">{inviteError}</p>}
           </div>
         </DialogContent>
         <DialogFooter>
