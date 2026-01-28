@@ -1,0 +1,60 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOrgMember(orgId) {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/organizationMembers/$(request.auth.uid + '_' + orgId));
+    }
+
+    function isOrgOwner(orgId) {
+      let memberDoc = get(/databases/$(database)/documents/organizationMembers/$(request.auth.uid + '_' + orgId));
+      return memberDoc != null && memberDoc.data.role == 'owner';
+    }
+
+    // Organizations
+    match /organizations/{orgId} {
+      allow read: if isOrgMember(orgId);
+      allow create: if isAuthenticated();
+      allow update, delete: if isOrgOwner(orgId);
+    }
+
+    // Organization Members
+    match /organizationMembers/{memberId} {
+      allow read: if isAuthenticated() &&
+        (resource.data.userId == request.auth.uid ||
+         isOrgMember(resource.data.orgId));
+      allow create: if isAuthenticated();
+      allow update, delete: if isOrgOwner(resource.data.orgId);
+    }
+
+    // Apps
+    match /apps/{appId} {
+      allow read: if isOrgMember(resource.data.orgId);
+      allow create: if isAuthenticated();
+      allow update, delete: if isOrgMember(resource.data.orgId);
+    }
+
+    // Requests (SDK data - server-side only)
+    match /requests/{requestId} {
+      allow read: if isOrgMember(get(/databases/$(database)/documents/apps/$(resource.data.appId)).data.orgId);
+      allow write: if false; // Server-side only
+    }
+
+    // Events (SDK data - server-side only)
+    match /events/{eventId} {
+      allow read: if isOrgMember(get(/databases/$(database)/documents/apps/$(resource.data.appId)).data.orgId);
+      allow write: if false; // Server-side only
+    }
+
+    // Audit Logs
+    match /auditLogs/{logId} {
+      allow read: if isOrgMember(resource.data.orgId);
+      allow write: if false; // Server-side only
+    }
+  }
+}
