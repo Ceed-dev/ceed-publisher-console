@@ -47,7 +47,7 @@ A media-side dashboard for publishers integrating the Ceed Ads SDK. Partners can
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS
 - **Authentication:** Firebase Authentication (Google sign-in only)
-- **Database:** Firestore (with real-time listeners)
+- **Database:** Firestore
 - **State Management:** TanStack Query (React Query)
 - **Validation:** Zod
 - **Icons:** Lucide React
@@ -116,11 +116,11 @@ A media-side dashboard for publishers integrating the Ceed Ads SDK. Partners can
 - Persisted via next-themes
 
 ### Data Management & Performance
-- **Firestore Real-time Listeners** - Organizations, apps, and members use Firestore `onSnapshot` for instant updates without refetching
-- **TanStack Query (React Query)** - Analytics and logs use React Query with 5-30 minute staleTime for intelligent caching
+- **TanStack Query (React Query)** - All data fetching uses React Query with 30-minute staleTime for intelligent caching
+- **API Routes with Admin SDK** - All Firestore access goes through authenticated API routes using Firebase Admin SDK
 - **No Redundant Fetches** - Data persists across page navigation; only fetched once per session
 - **Smart Loading States** - Only shows spinners on initial load; existing data remains visible during updates
-- **Automatic Updates** - Changes made by other users or in other tabs appear automatically via real-time sync
+- **Cache Invalidation** - After mutations (create/update/delete), cache is invalidated to fetch fresh data
 
 ---
 
