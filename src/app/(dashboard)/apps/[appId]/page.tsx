@@ -25,7 +25,7 @@ export default function AppOverviewPage() {
     endDate: endOfDay(new Date()),
   });
 
-  const { metrics, loading: analyticsLoading } = useAnalytics({
+  const { metrics, loading: analyticsLoading, error: analyticsError } = useAnalytics({
     appId,
     timeRange,
   });
@@ -107,7 +107,7 @@ export default function AppOverviewPage() {
           </div>
 
           <TabsContent value="overview" className="space-y-6">
-            <KPIGrid metrics={metrics} loading={analyticsLoading} />
+            <KPIGrid metrics={metrics} loading={analyticsLoading} error={analyticsError} />
           </TabsContent>
         </Tabs>
       </div>

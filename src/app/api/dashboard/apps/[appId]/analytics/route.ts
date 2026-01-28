@@ -73,8 +73,9 @@ export async function GET(
     });
   } catch (error) {
     console.error('Failed to fetch analytics:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { error: 'Failed to fetch analytics' },
+      { error: 'Failed to fetch analytics', details: errorMessage },
       { status: 500 }
     );
   }

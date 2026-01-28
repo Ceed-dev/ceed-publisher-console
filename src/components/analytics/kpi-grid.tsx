@@ -7,9 +7,10 @@ import { Activity, CheckCircle, BarChart3, Eye, MousePointer, Target } from 'luc
 interface KPIGridProps {
   metrics: AnalyticsMetrics | null;
   loading?: boolean;
+  error?: string | null;
 }
 
-export function KPIGrid({ metrics, loading }: KPIGridProps) {
+export function KPIGrid({ metrics, loading, error }: KPIGridProps) {
   if (loading) {
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -19,6 +20,14 @@ export function KPIGrid({ metrics, loading }: KPIGridProps) {
             className="h-32 animate-pulse rounded-lg border bg-card"
           />
         ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-lg border border-destructive bg-card p-8 text-center text-destructive">
+        Error loading analytics: {error}
       </div>
     );
   }
