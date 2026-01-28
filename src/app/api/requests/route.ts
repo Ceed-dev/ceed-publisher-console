@@ -116,9 +116,10 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error('Request handling error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const headers = getCorsHeaders(origin, ['*']);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error', details: errorMessage },
       { status: 500, headers }
     );
   }
