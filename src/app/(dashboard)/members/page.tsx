@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useOrganization } from '@/hooks/use-organization';
 import { OrganizationMember, MemberRole } from '@/types/member';
 import { Header } from '@/components/layout/header';
@@ -26,6 +26,7 @@ import {
 import { Plus, Loader2, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { timestampToDate } from '@/lib/utils/timestamp';
+import { getCached, setCache, invalidateCache } from '@/lib/utils/cache';
 
 export default function MembersPage() {
   const { currentOrg } = useOrganization();
@@ -36,9 +37,29 @@ export default function MembersPage() {
   const [inviteRole, setInviteRole] = useState<MemberRole>('developer');
   const [inviting, setInviting] = useState(false);
   const [error, setError] = useState('');
+  const lastOrgId = useRef<string | null>(null);
 
-  const fetchMembers = async () => {
+  const fetchMembers = async (skipCache = false) => {
     if (!currentOrg) return;
+
+    const cacheKey = `members:${currentOrg.orgId}`;
+    const orgChanged = lastOrgId.current !== currentOrg.orgId;
+    lastOrgId.current = currentOrg.orgId;
+
+    // Check cache first
+    if (!skipCache) {
+      const cached = getCached<{ members: OrganizationMember[] }>(cacheKey, 60000);
+      if (cached) {
+        setMembers(cached.members);
+        setLoading(false);
+        return;
+      }
+    }
+
+    // Only show loading if org changed and we have no cached data
+    if (orgChanged && members.length === 0) {
+      setLoading(true);
+    }
 
     try {
       const response = await fetch(
@@ -46,6 +67,7 @@ export default function MembersPage() {
       );
       if (response.ok) {
         const data = await response.json();
+        setCache(cacheKey, data);
         setMembers(data.members);
       }
     } catch (error) {
@@ -81,7 +103,8 @@ export default function MembersPage() {
         throw new Error(data.error || 'Failed to invite member');
       }
 
-      await fetchMembers();
+      invalidateCache(`members:${currentOrg.orgId}`);
+      await fetchMembers(true);
       setShowInviteDialog(false);
       setInviteEmail('');
       setInviteRole('developer');
@@ -93,6 +116,7 @@ export default function MembersPage() {
   };
 
   const handleRoleChange = async (memberId: string, newRole: MemberRole) => {
+    if (!currentOrg) return;
     try {
       const response = await fetch(`/api/dashboard/members/${memberId}`, {
         method: 'PATCH',
@@ -101,7 +125,8 @@ export default function MembersPage() {
       });
 
       if (response.ok) {
-        await fetchMembers();
+        invalidateCache(`members:${currentOrg.orgId}`);
+        await fetchMembers(true);
       } else {
         const data = await response.json();
         alert(data.error || 'Failed to update role');
@@ -112,6 +137,7 @@ export default function MembersPage() {
   };
 
   const handleRemove = async (memberId: string) => {
+    if (!currentOrg) return;
     if (!confirm('Are you sure you want to remove this member?')) return;
 
     try {
@@ -120,7 +146,8 @@ export default function MembersPage() {
       });
 
       if (response.ok) {
-        await fetchMembers();
+        invalidateCache(`members:${currentOrg.orgId}`);
+        await fetchMembers(true);
       } else {
         const data = await response.json();
         alert(data.error || 'Failed to remove member');
@@ -143,7 +170,7 @@ export default function MembersPage() {
     }
   };
 
-  if (loading) {
+  if (loading && members.length === 0) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />

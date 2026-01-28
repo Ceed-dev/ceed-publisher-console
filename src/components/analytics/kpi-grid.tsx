@@ -7,11 +7,13 @@ import { Activity, CheckCircle, BarChart3, Eye, MousePointer, Target } from 'luc
 interface KPIGridProps {
   metrics: AnalyticsMetrics | null;
   loading?: boolean;
+  isRefreshing?: boolean;
   error?: string | null;
 }
 
-export function KPIGrid({ metrics, loading, error }: KPIGridProps) {
-  if (loading) {
+export function KPIGrid({ metrics, loading, isRefreshing, error }: KPIGridProps) {
+  // Only show skeleton on initial load with no data
+  if (loading && !metrics) {
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {[...Array(6)].map((_, i) => (
@@ -24,7 +26,7 @@ export function KPIGrid({ metrics, loading, error }: KPIGridProps) {
     );
   }
 
-  if (error) {
+  if (error && !metrics) {
     return (
       <div className="rounded-lg border border-destructive bg-card p-8 text-center text-destructive">
         Error loading analytics: {error}
@@ -52,7 +54,14 @@ export function KPIGrid({ metrics, loading, error }: KPIGridProps) {
   };
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="relative">
+      {isRefreshing && (
+        <div className="absolute -top-6 right-0 flex items-center gap-2 text-xs text-muted-foreground">
+          <div className="h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          Updating...
+        </div>
+      )}
+      <div className={`grid gap-4 md:grid-cols-2 lg:grid-cols-3 ${isRefreshing ? 'opacity-70' : ''}`}>
       <KPICard
         title="Total Requests"
         value={formatNumber(metrics.totalRequests)}
@@ -83,6 +92,7 @@ export function KPIGrid({ metrics, loading, error }: KPIGridProps) {
         value={formatPercent(metrics.clickThroughRate)}
         icon={Target}
       />
+      </div>
     </div>
   );
 }

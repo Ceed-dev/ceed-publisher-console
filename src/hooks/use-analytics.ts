@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { AnalyticsMetrics, TimeRange } from '@/types/analytics';
+import { getCached, setCache } from '@/lib/utils/cache';
 
 interface UseAnalyticsOptions {
   appId: string;
@@ -11,6 +12,7 @@ interface UseAnalyticsOptions {
 interface UseAnalyticsResult {
   metrics: AnalyticsMetrics | null;
   loading: boolean;
+  isRefreshing: boolean;
   error: string | null;
   refetch: () => Promise<void>;
 }
@@ -18,12 +20,30 @@ interface UseAnalyticsResult {
 export function useAnalytics({ appId, timeRange }: UseAnalyticsOptions): UseAnalyticsResult {
   const [metrics, setMetrics] = useState<AnalyticsMetrics | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const initialLoadDone = useRef(false);
 
   const fetchAnalytics = useCallback(async () => {
     if (!appId) return;
 
-    setLoading(true);
+    const cacheKey = `analytics:${appId}:${timeRange.startDate.toISOString()}:${timeRange.endDate.toISOString()}`;
+
+    // Check cache first
+    const cached = getCached<{ metrics: AnalyticsMetrics }>(cacheKey, 30000);
+    if (cached) {
+      setMetrics(cached.metrics);
+      setLoading(false);
+      initialLoadDone.current = true;
+      return;
+    }
+
+    // Only show loading spinner on initial load, show refreshing indicator otherwise
+    if (!initialLoadDone.current && !metrics) {
+      setLoading(true);
+    } else {
+      setIsRefreshing(true);
+    }
     setError(null);
 
     try {
@@ -41,17 +61,20 @@ export function useAnalytics({ appId, timeRange }: UseAnalyticsOptions): UseAnal
       }
 
       const data = await response.json();
+      setCache(cacheKey, data);
       setMetrics(data.metrics);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
+      setIsRefreshing(false);
+      initialLoadDone.current = true;
     }
-  }, [appId, timeRange]);
+  }, [appId, timeRange, metrics]);
 
   useEffect(() => {
     fetchAnalytics();
-  }, [fetchAnalytics]);
+  }, [appId, timeRange.startDate.getTime(), timeRange.endDate.getTime()]);
 
-  return { metrics, loading, error, refetch: fetchAnalytics };
+  return { metrics, loading, isRefreshing, error, refetch: fetchAnalytics };
 }
