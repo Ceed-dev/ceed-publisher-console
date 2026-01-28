@@ -7,14 +7,14 @@ import { Header } from '@/components/layout/header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { useRealtimeApp } from '@/hooks/use-realtime-app';
+import { useAppQuery } from '@/hooks/use-apps-query';
 import { ArrowLeft, Copy, Check } from 'lucide-react';
 
 export default function IntegrationPage() {
   const params = useParams();
   const appId = params.appId as string;
 
-  const { app, loading, error } = useRealtimeApp(appId);
+  const { data: app, isLoading, error } = useAppQuery(appId);
   const [copied, setCopied] = useState<string | null>(null);
 
   const copyToClipboard = async (text: string, id: string) => {
@@ -23,7 +23,7 @@ export default function IntegrationPage() {
     setTimeout(() => setCopied(null), 2000);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
@@ -37,7 +37,7 @@ export default function IntegrationPage() {
         <Header title="App Not Found" />
         <div className="flex flex-1 items-center justify-center">
           <p className="text-muted-foreground">
-            {error || 'The app you are looking for does not exist.'}
+            {error ? String(error) : 'The app you are looking for does not exist.'}
           </p>
         </div>
       </div>

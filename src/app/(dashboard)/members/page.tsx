@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useOrganization } from '@/hooks/use-organization';
-import { useRealtimeMembers } from '@/hooks/use-realtime-members';
+import { useMembersQuery, useInvalidateMembers } from '@/hooks/use-members-query';
 import { MemberRole } from '@/types/member';
 import { Header } from '@/components/layout/header';
 import { Button } from '@/components/ui/button';
@@ -30,7 +30,8 @@ import { timestampToDate } from '@/lib/utils/timestamp';
 
 export default function MembersPage() {
   const { currentOrg } = useOrganization();
-  const { members, loading, error } = useRealtimeMembers(currentOrg?.orgId);
+  const { data: members = [], isLoading, error } = useMembersQuery(currentOrg?.orgId);
+  const { invalidateMembers } = useInvalidateMembers();
   const [showInviteDialog, setShowInviteDialog] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState<MemberRole>('developer');
@@ -59,7 +60,8 @@ export default function MembersPage() {
         throw new Error(data.error || 'Failed to invite member');
       }
 
-      // Real-time listener will automatically update the members list
+      // Invalidate cache to refetch updated members
+      invalidateMembers(currentOrg.orgId);
       setShowInviteDialog(false);
       setInviteEmail('');
       setInviteRole('developer');
@@ -71,6 +73,7 @@ export default function MembersPage() {
   };
 
   const handleRoleChange = async (memberId: string, newRole: MemberRole) => {
+    if (!currentOrg) return;
     try {
       const response = await fetch(`/api/dashboard/members/${memberId}`, {
         method: 'PATCH',
@@ -81,14 +84,17 @@ export default function MembersPage() {
       if (!response.ok) {
         const data = await response.json();
         alert(data.error || 'Failed to update role');
+      } else {
+        // Invalidate cache to refetch updated members
+        invalidateMembers(currentOrg.orgId);
       }
-      // Real-time listener will automatically update the members list
     } catch (error) {
       console.error('Failed to update role:', error);
     }
   };
 
   const handleRemove = async (memberId: string) => {
+    if (!currentOrg) return;
     if (!confirm('Are you sure you want to remove this member?')) return;
 
     try {
@@ -99,8 +105,10 @@ export default function MembersPage() {
       if (!response.ok) {
         const data = await response.json();
         alert(data.error || 'Failed to remove member');
+      } else {
+        // Invalidate cache to refetch updated members
+        invalidateMembers(currentOrg.orgId);
       }
-      // Real-time listener will automatically update the members list
     } catch (error) {
       console.error('Failed to remove member:', error);
     }
@@ -119,7 +127,7 @@ export default function MembersPage() {
     }
   };
 
-  if (loading && members.length === 0) {
+  if (isLoading && members.length === 0) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
@@ -145,7 +153,7 @@ export default function MembersPage() {
       <div className="flex min-h-screen flex-col">
         <Header title="Team" description={`Manage members of ${currentOrg.name}`} />
         <div className="flex flex-1 items-center justify-center">
-          <p className="text-destructive">Error loading members: {error}</p>
+          <p className="text-destructive">Error loading members: {String(error)}</p>
         </div>
       </div>
     );

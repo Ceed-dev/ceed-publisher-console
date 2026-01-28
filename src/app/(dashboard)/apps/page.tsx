@@ -2,18 +2,18 @@
 
 import Link from 'next/link';
 import { useOrganization } from '@/hooks/use-organization';
+import { useAppsQuery } from '@/hooks/use-apps-query';
 import { Header } from '@/components/layout/header';
 import { AppCard } from '@/components/apps/app-card';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import { useRealtimeApps } from '@/hooks/use-realtime-apps';
 
 export default function AppsPage() {
   const { currentOrg, loading: orgLoading } = useOrganization();
-  const { apps, loading, error } = useRealtimeApps(currentOrg?.orgId);
+  const { data: apps = [], isLoading, error } = useAppsQuery(currentOrg?.orgId);
 
   // Show loading only on initial load
-  if ((orgLoading || loading) && apps.length === 0) {
+  if ((orgLoading || isLoading) && apps.length === 0) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
@@ -46,7 +46,7 @@ export default function AppsPage() {
       <div className="flex min-h-screen flex-col">
         <Header title="Apps" description={`Manage apps for ${currentOrg.name}`} />
         <div className="flex flex-1 items-center justify-center">
-          <p className="text-destructive">Error loading apps: {error}</p>
+          <p className="text-destructive">Error loading apps: {String(error)}</p>
         </div>
       </div>
     );

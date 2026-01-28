@@ -10,7 +10,7 @@ import { RequestsTable } from '@/components/logs/requests-table';
 import { EventsTable } from '@/components/logs/events-table';
 import { LogFilters } from '@/components/logs/log-filters';
 import { ExportButton } from '@/components/logs/export-button';
-import { useRealtimeApp } from '@/hooks/use-realtime-app';
+import { useAppQuery } from '@/hooks/use-apps-query';
 import { useRequestLogsQuery, useEventLogsQuery } from '@/hooks/use-logs-query';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
 
@@ -22,7 +22,7 @@ export default function LogsPage() {
   const initialTab = searchParams.get('tab') || 'requests';
   const initialRequestId = searchParams.get('requestId') || '';
 
-  const { app, loading: appLoading } = useRealtimeApp(appId);
+  const { data: app, isLoading: appLoading } = useAppQuery(appId);
   const [activeTab, setActiveTab] = useState(initialTab);
   const [requestFilters, setRequestFilters] = useState<{
     status?: string;

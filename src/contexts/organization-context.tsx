@@ -7,9 +7,10 @@ import {
   useEffect,
   ReactNode,
 } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Organization } from '@/types/organization';
 import { useAuth } from './auth-context';
-import { useRealtimeOrganizations } from '@/hooks/use-realtime-organizations';
+import { useOrganizationsQuery } from '@/hooks/use-organizations-query';
 
 interface OrganizationContextValue {
   organizations: Organization[];
@@ -17,6 +18,7 @@ interface OrganizationContextValue {
   setCurrentOrg: (org: Organization) => void;
   loading: boolean;
   error: string | null;
+  refetchOrganizations: () => void;
 }
 
 const OrganizationContext = createContext<OrganizationContextValue | null>(null);
@@ -25,13 +27,19 @@ const CURRENT_ORG_KEY = 'cpc_current_org_id';
 
 export function OrganizationProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const { organizations, loading, error } = useRealtimeOrganizations();
+  const queryClient = useQueryClient();
+  const {
+    data: organizations = [],
+    isLoading,
+    error,
+    refetch,
+  } = useOrganizationsQuery(!!user);
   const [currentOrg, setCurrentOrgState] = useState<Organization | null>(null);
   const [initialized, setInitialized] = useState(false);
 
   // Set initial org from localStorage or first org
   useEffect(() => {
-    if (loading || initialized) return;
+    if (isLoading || initialized) return;
 
     if (!user) {
       setCurrentOrgState(null);
@@ -50,12 +58,12 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
         localStorage.setItem(CURRENT_ORG_KEY, organizations[0].orgId);
       }
       setInitialized(true);
-    } else if (!loading) {
+    } else if (!isLoading) {
       setInitialized(true);
     }
-  }, [user, organizations, loading, initialized]);
+  }, [user, organizations, isLoading, initialized]);
 
-  // Update currentOrg if it changes in the organizations list (real-time update)
+  // Update currentOrg if it changes in the organizations list
   useEffect(() => {
     if (!currentOrg || organizations.length === 0) return;
 
@@ -65,9 +73,22 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
     }
   }, [organizations, currentOrg]);
 
+  // Clear state when user logs out
+  useEffect(() => {
+    if (!user) {
+      setCurrentOrgState(null);
+      setInitialized(false);
+      queryClient.removeQueries({ queryKey: ['organizations'] });
+    }
+  }, [user, queryClient]);
+
   const setCurrentOrg = (org: Organization) => {
     setCurrentOrgState(org);
     localStorage.setItem(CURRENT_ORG_KEY, org.orgId);
+  };
+
+  const refetchOrganizations = () => {
+    refetch();
   };
 
   return (
@@ -76,8 +97,9 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
         organizations,
         currentOrg,
         setCurrentOrg,
-        loading: loading && !initialized,
-        error,
+        loading: isLoading && !initialized,
+        error: error ? String(error) : null,
+        refetchOrganizations,
       }}
     >
       {children}

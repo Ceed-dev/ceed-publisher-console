@@ -8,14 +8,15 @@ import { SettingsForm } from '@/components/apps/settings-form';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useRealtimeApp } from '@/hooks/use-realtime-app';
+import { useAppQuery, useInvalidateApps } from '@/hooks/use-apps-query';
 import { ArrowLeft, AlertTriangle } from 'lucide-react';
 
 export default function SettingsPage() {
   const params = useParams();
   const appId = params.appId as string;
 
-  const { app, loading, error } = useRealtimeApp(appId);
+  const { data: app, isLoading, error } = useAppQuery(appId);
+  const { invalidateApp } = useInvalidateApps();
 
   const handleSave = async (settings: Partial<AppSettings>) => {
     const response = await fetch(`/api/dashboard/apps/${appId}`, {
@@ -28,7 +29,9 @@ export default function SettingsPage() {
       const data = await response.json();
       throw new Error(data.error || 'Failed to save settings');
     }
-    // Real-time listener will automatically update the app data
+
+    // Invalidate cache to refetch updated data
+    invalidateApp(appId);
   };
 
   const handleStatusToggle = async () => {
@@ -40,10 +43,12 @@ export default function SettingsPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: newStatus }),
     });
-    // Real-time listener will automatically update the app data
+
+    // Invalidate cache to refetch updated data
+    invalidateApp(appId);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
@@ -57,7 +62,7 @@ export default function SettingsPage() {
         <Header title="App Not Found" />
         <div className="flex flex-1 items-center justify-center">
           <p className="text-muted-foreground">
-            {error || 'The app you are looking for does not exist.'}
+            {error ? String(error) : 'The app you are looking for does not exist.'}
           </p>
         </div>
       </div>
