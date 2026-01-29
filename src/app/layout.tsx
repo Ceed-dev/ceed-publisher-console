@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/contexts/theme-context';
 import { AuthProvider } from '@/contexts/auth-context';
 import { OrganizationProvider } from '@/contexts/organization-context';
 import { UserSettingsProvider } from '@/contexts/user-settings-context';
+import { LocaleProvider } from '@/contexts/locale-context';
 import { QueryProvider } from '@/lib/query-client';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -26,7 +27,9 @@ export default function RootLayout({
           <ThemeProvider>
             <AuthProvider>
               <OrganizationProvider>
-                <UserSettingsProvider>{children}</UserSettingsProvider>
+                <UserSettingsProvider>
+                  <LocaleProvider>{children}</LocaleProvider>
+                </UserSettingsProvider>
               </OrganizationProvider>
             </AuthProvider>
           </ThemeProvider>

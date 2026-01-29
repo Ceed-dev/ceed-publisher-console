@@ -3,20 +3,23 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LayoutGrid, Users, Settings, Building2, LogOut } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { OrgSwitcher } from './org-switcher';
 import { ThemeToggle } from './theme-toggle';
 import { useAuth } from '@/hooks/use-auth';
 
-const navigation = [
-  { name: 'Apps', href: '/apps', icon: LayoutGrid },
-  { name: 'Team', href: '/members', icon: Users },
-  { name: 'Organization', href: '/organization/settings', icon: Building2 },
-  { name: 'Settings', href: '/settings', icon: Settings },
-];
+const navigationItems = [
+  { key: 'apps', href: '/apps', icon: LayoutGrid },
+  { key: 'team', href: '/members', icon: Users },
+  { key: 'organization', href: '/organization/settings', icon: Building2 },
+  { key: 'settings', href: '/settings', icon: Settings },
+] as const;
 
 export function Sidebar() {
   const pathname = usePathname();
   const { signOut } = useAuth();
+  const t = useTranslations('nav');
+  const tCommon = useTranslations('common');
 
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r bg-card">
@@ -34,11 +37,11 @@ export function Sidebar() {
       </div>
 
       <nav className="flex-1 space-y-1 px-2 py-4">
-        {navigation.map((item) => {
+        {navigationItems.map((item) => {
           const isActive = pathname.startsWith(item.href);
           return (
             <Link
-              key={item.name}
+              key={item.key}
               href={item.href}
               className={`
                 flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium
@@ -50,7 +53,7 @@ export function Sidebar() {
               `}
             >
               <item.icon className="h-5 w-5" />
-              {item.name}
+              {t(item.key)}
             </Link>
           );
         })}
@@ -64,7 +67,7 @@ export function Sidebar() {
             className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground"
           >
             <LogOut className="h-5 w-5" />
-            Sign Out
+            {tCommon('signOut')}
           </button>
         </div>
       </div>

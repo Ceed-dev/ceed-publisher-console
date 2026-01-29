@@ -1,0 +1,142 @@
+{
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラー",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "create": "作成",
+    "delete": "削除",
+    "back": "戻る",
+    "signOut": "ログアウト",
+    "created": "作成日: {date}",
+    "web": "Web",
+    "ios": "iOS"
+  },
+  "nav": {
+    "apps": "アプリ",
+    "team": "チーム",
+    "organization": "組織",
+    "settings": "設定"
+  },
+  "login": {
+    "title": "Ceed Publisher Console",
+    "description": "アプリを管理し、パフォーマンスをモニタリングするにはログインしてください",
+    "signInWithGoogle": "Googleでログイン",
+    "signingIn": "ログイン中...",
+    "error": "ログインに失敗しました。もう一度お試しください。"
+  },
+  "apps": {
+    "title": "アプリ",
+    "description": "{orgName}のアプリを管理",
+    "newApp": "新規アプリ",
+    "createApp": "アプリを作成",
+    "noApps": {
+      "title": "アプリがありません",
+      "description": "Ceed Ads SDKを統合するために最初のアプリを作成してください"
+    },
+    "noOrg": {
+      "title": "組織がありません",
+      "description": "アプリを追加するには組織を作成してください"
+    },
+    "createOrg": "組織を作成",
+    "notFound": "アプリが見つかりません",
+    "notFoundDescription": "お探しのアプリは存在しません。",
+    "appId": "アプリID: {appId}"
+  },
+  "appForm": {
+    "title": "新規アプリを作成",
+    "description": "Ceed Ads SDKを統合するための新しいアプリを追加",
+    "appName": "アプリ名",
+    "appNamePlaceholder": "素晴らしいアプリ",
+    "appNameRequired": "アプリ名は必須です",
+    "platforms": "プラットフォーム",
+    "platformRequired": "少なくとも1つのプラットフォームを選択してください",
+    "selectOrg": "組織を選択してください",
+    "backToApps": "アプリ一覧に戻る"
+  },
+  "appDetail": {
+    "logs": "ログ",
+    "integration": "統合",
+    "settings": "設定",
+    "overview": "概要"
+  },
+  "appSettings": {
+    "requestSettings": "リクエスト設定",
+    "requestSettingsDesc": "広告リクエストの処理方法を設定",
+    "cooldown": "クールダウン（秒）",
+    "cooldownDesc": "同一ユーザーからの広告リクエスト間の最小時間",
+    "allowedOrigins": "許可オリジン",
+    "allowedOriginsPlaceholder": "https://example.com",
+    "allowedOriginsDesc": "空の場合、すべてのオリジンを許可",
+    "invalidUrl": "無効なURL形式",
+    "languageSettings": "言語設定",
+    "languageSettingsDesc": "広告でサポートする言語を設定",
+    "english": "英語",
+    "japanese": "日本語",
+    "privacySettings": "プライバシー設定",
+    "privacySettingsDesc": "コンテキストテキストのログ記録方法を設定",
+    "contextLoggingMode": "コンテキストログモード",
+    "loggingNone": "なし - コンテキストをログに記録しない",
+    "loggingTruncated": "切り詰め - 最初の64文字",
+    "loggingHashed": "ハッシュ - SHA-256ハッシュのみ",
+    "loggingFull": "完全 - テキスト全体を保存",
+    "atLeastOneLanguage": "少なくとも1つの言語が必要です",
+    "saveSettings": "設定を保存",
+    "settingsSaved": "設定が正常に保存されました"
+  },
+  "team": {
+    "title": "チーム",
+    "description": "{orgName}のメンバーを管理",
+    "inviteMember": "メンバーを招待",
+    "noOrg": "チームメンバーを管理するには組織を選択してください",
+    "email": "メールアドレス",
+    "emailAddress": "メールアドレス",
+    "emailPlaceholder": "colleague@example.com",
+    "role": "役割",
+    "joined": "参加日",
+    "actions": "操作",
+    "owner": "オーナー",
+    "developer": "開発者",
+    "analyst": "アナリスト",
+    "ownerDesc": "オーナー - 完全アクセス",
+    "developerDesc": "開発者 - アプリ管理",
+    "analystDesc": "アナリスト - 閲覧のみ",
+    "sendInvite": "招待を送信",
+    "inviteTitle": "チームメンバーを招待",
+    "confirmRemove": "このメンバーを削除してもよろしいですか？"
+  },
+  "organization": {
+    "title": "組織設定",
+    "description": "組織を管理",
+    "name": "組織名",
+    "nameDesc": "組織の表示名を更新",
+    "namePlaceholder": "組織名",
+    "id": "組織ID",
+    "idDesc": "一意の組織識別子",
+    "saveChanges": "変更を保存",
+    "updated": "組織が正常に更新されました"
+  },
+  "orgSwitcher": {
+    "createOrg": "組織を作成"
+  },
+  "newOrg": {
+    "title": "組織を作成",
+    "description": "アプリを管理するための組織を設定",
+    "name": "組織名",
+    "namePlaceholder": "マイカンパニー",
+    "nameRequired": "組織名は必須です",
+    "create": "組織を作成"
+  },
+  "settings": {
+    "title": "設定",
+    "description": "個人設定を管理",
+    "defaultLanguage": "デフォルト言語",
+    "defaultLanguageDesc": "新しいアプリ作成時のデフォルト言語を設定",
+    "appearance": "外観",
+    "appearanceDesc": "アプリケーションの見た目をカスタマイズ",
+    "theme": "テーマ",
+    "themeDesc": "ライトモードとダークモードを切り替え",
+    "english": "English",
+    "japanese": "日本語"
+  }
+}

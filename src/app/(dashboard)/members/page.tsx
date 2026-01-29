@@ -27,6 +27,7 @@ import {
 import { Plus, Loader2, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { timestampToDate } from '@/lib/utils/timestamp';
+import { useTranslations } from 'next-intl';
 
 export default function MembersPage() {
   const { currentOrg } = useOrganization();
@@ -37,6 +38,8 @@ export default function MembersPage() {
   const [inviteRole, setInviteRole] = useState<MemberRole>('developer');
   const [inviting, setInviting] = useState(false);
   const [inviteError, setInviteError] = useState('');
+  const t = useTranslations('team');
+  const tCommon = useTranslations('common');
 
   const handleInvite = async () => {
     if (!currentOrg || !inviteEmail.trim()) return;
@@ -95,7 +98,7 @@ export default function MembersPage() {
 
   const handleRemove = async (memberId: string) => {
     if (!currentOrg) return;
-    if (!confirm('Are you sure you want to remove this member?')) return;
+    if (!confirm(t('confirmRemove'))) return;
 
     try {
       const response = await fetch(`/api/dashboard/members/${memberId}`, {
@@ -117,11 +120,11 @@ export default function MembersPage() {
   const getRoleBadge = (role: MemberRole) => {
     switch (role) {
       case 'owner':
-        return <Badge variant="default">Owner</Badge>;
+        return <Badge variant="default">{t('owner')}</Badge>;
       case 'developer':
-        return <Badge variant="outline">Developer</Badge>;
+        return <Badge variant="outline">{t('developer')}</Badge>;
       case 'analyst':
-        return <Badge variant="outline">Analyst</Badge>;
+        return <Badge variant="outline">{t('analyst')}</Badge>;
       default:
         return <Badge variant="outline">{role}</Badge>;
     }
@@ -138,10 +141,10 @@ export default function MembersPage() {
   if (!currentOrg) {
     return (
       <div className="flex min-h-screen flex-col">
-        <Header title="Team" />
+        <Header title={t('title')} />
         <div className="flex flex-1 items-center justify-center">
           <p className="text-muted-foreground">
-            Select an organization to manage team members
+            {t('noOrg')}
           </p>
         </div>
       </div>
@@ -151,7 +154,7 @@ export default function MembersPage() {
   if (error) {
     return (
       <div className="flex min-h-screen flex-col">
-        <Header title="Team" description={`Manage members of ${currentOrg.name}`} />
+        <Header title={t('title')} description={t('description', { orgName: currentOrg.name })} />
         <div className="flex flex-1 items-center justify-center">
           <p className="text-destructive">Error loading members: {String(error)}</p>
         </div>
@@ -162,12 +165,12 @@ export default function MembersPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <Header
-        title="Team"
-        description={`Manage members of ${currentOrg.name}`}
+        title={t('title')}
+        description={t('description', { orgName: currentOrg.name })}
       >
         <Button onClick={() => setShowInviteDialog(true)}>
           <Plus className="mr-2 h-4 w-4" />
-          Invite Member
+          {t('inviteMember')}
         </Button>
       </Header>
 
@@ -175,10 +178,10 @@ export default function MembersPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Joined</TableHead>
-              <TableHead className="w-[100px]">Actions</TableHead>
+              <TableHead>{t('email')}</TableHead>
+              <TableHead>{t('role')}</TableHead>
+              <TableHead>{t('joined')}</TableHead>
+              <TableHead className="w-[100px]">{t('actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -201,9 +204,9 @@ export default function MembersPage() {
                       handleRoleChange(member.memberId, e.target.value as MemberRole)
                     }
                     options={[
-                      { value: 'owner', label: 'Owner' },
-                      { value: 'developer', label: 'Developer' },
-                      { value: 'analyst', label: 'Analyst' },
+                      { value: 'owner', label: t('owner') },
+                      { value: 'developer', label: t('developer') },
+                      { value: 'analyst', label: t('analyst') },
                     ]}
                     className="w-32"
                   />
@@ -229,34 +232,34 @@ export default function MembersPage() {
 
       <Dialog open={showInviteDialog} onClose={() => setShowInviteDialog(false)}>
         <DialogHeader>
-          <DialogTitle>Invite Team Member</DialogTitle>
+          <DialogTitle>{t('inviteTitle')}</DialogTitle>
         </DialogHeader>
         <DialogContent>
           <div className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">
-                Email Address
+                {t('emailAddress')}
               </label>
               <Input
                 id="email"
                 type="email"
-                placeholder="colleague@example.com"
+                placeholder={t('emailPlaceholder')}
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
               />
             </div>
             <div className="space-y-2">
               <label htmlFor="role" className="text-sm font-medium">
-                Role
+                {t('role')}
               </label>
               <Select
                 id="role"
                 value={inviteRole}
                 onChange={(e) => setInviteRole(e.target.value as MemberRole)}
                 options={[
-                  { value: 'owner', label: 'Owner - Full access' },
-                  { value: 'developer', label: 'Developer - Manage apps' },
-                  { value: 'analyst', label: 'Analyst - View only' },
+                  { value: 'owner', label: t('ownerDesc') },
+                  { value: 'developer', label: t('developerDesc') },
+                  { value: 'analyst', label: t('analystDesc') },
                 ]}
               />
             </div>
@@ -265,11 +268,11 @@ export default function MembersPage() {
         </DialogContent>
         <DialogFooter>
           <Button variant="outline" onClick={() => setShowInviteDialog(false)}>
-            Cancel
+            {tCommon('cancel')}
           </Button>
           <Button onClick={handleInvite} disabled={inviting || !inviteEmail.trim()}>
             {inviting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Send Invite
+            {t('sendInvite')}
           </Button>
         </DialogFooter>
       </Dialog>

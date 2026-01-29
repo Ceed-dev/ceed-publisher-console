@@ -6,12 +6,14 @@ import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function LoginPage() {
   const router = useRouter();
   const { user, loading, signIn } = useAuth();
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [error, setError] = useState('');
+  const t = useTranslations('login');
 
   useEffect(() => {
     if (!loading && user) {
@@ -28,7 +30,7 @@ export default function LoginPage() {
       // Use window.location for hard navigation to ensure cookie is picked up
       window.location.href = '/apps';
     } catch (err) {
-      setError('Failed to sign in. Please try again.');
+      setError(t('error'));
       console.error('Sign in error:', err);
       setIsSigningIn(false);
     }
@@ -49,9 +51,9 @@ export default function LoginPage() {
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-2xl font-bold text-primary-foreground">
             C
           </div>
-          <CardTitle className="text-2xl">Ceed Publisher Console</CardTitle>
+          <CardTitle className="text-2xl">{t('title')}</CardTitle>
           <CardDescription>
-            Sign in to manage your apps and monitor performance
+            {t('description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -66,7 +68,7 @@ export default function LoginPage() {
             {isSigningIn ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Signing in...
+                {t('signingIn')}
               </>
             ) : (
               <>
@@ -88,7 +90,7 @@ export default function LoginPage() {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   />
                 </svg>
-                Sign in with Google
+                {t('signInWithGoogle')}
               </>
             )}
           </Button>

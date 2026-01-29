@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useOrganization } from '@/hooks/use-organization';
 import { useUserSettings } from '@/contexts/user-settings-context';
 import { Globe, Smartphone, Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export function AppForm() {
   const router = useRouter();
@@ -17,6 +18,8 @@ export function AppForm() {
   const [platforms, setPlatforms] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const t = useTranslations('appForm');
+  const tCommon = useTranslations('common');
 
   const togglePlatform = (platform: string) => {
     setPlatforms((prev) =>
@@ -30,17 +33,17 @@ export function AppForm() {
     e.preventDefault();
 
     if (!currentOrg) {
-      setError('Please select an organization');
+      setError(t('selectOrg'));
       return;
     }
 
     if (!appName.trim()) {
-      setError('App name is required');
+      setError(t('appNameRequired'));
       return;
     }
 
     if (platforms.length === 0) {
-      setError('Select at least one platform');
+      setError(t('platformRequired'));
       return;
     }
 
@@ -76,28 +79,28 @@ export function AppForm() {
   return (
     <Card className="max-w-lg">
       <CardHeader>
-        <CardTitle>Create a New App</CardTitle>
+        <CardTitle>{t('title')}</CardTitle>
         <CardDescription>
-          Add a new app to integrate the Ceed Ads SDK
+          {t('description')}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <label htmlFor="appName" className="text-sm font-medium">
-              App Name
+              {t('appName')}
             </label>
             <Input
               id="appName"
-              placeholder="My Awesome App"
+              placeholder={t('appNamePlaceholder')}
               value={appName}
               onChange={(e) => setAppName(e.target.value)}
-              error={error && !appName ? 'App name is required' : undefined}
+              error={error && !appName ? t('appNameRequired') : undefined}
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Platforms</label>
+            <label className="text-sm font-medium">{t('platforms')}</label>
             <div className="flex gap-3">
               <button
                 type="button"
@@ -112,7 +115,7 @@ export function AppForm() {
                 `}
               >
                 <Globe className="h-5 w-5" />
-                <span className="font-medium">Web</span>
+                <span className="font-medium">{tCommon('web')}</span>
               </button>
               <button
                 type="button"
@@ -127,11 +130,11 @@ export function AppForm() {
                 `}
               >
                 <Smartphone className="h-5 w-5" />
-                <span className="font-medium">iOS</span>
+                <span className="font-medium">{tCommon('ios')}</span>
               </button>
             </div>
             {error && platforms.length === 0 && (
-              <p className="text-sm text-destructive">Select at least one platform</p>
+              <p className="text-sm text-destructive">{t('platformRequired')}</p>
             )}
           </div>
 
@@ -141,7 +144,7 @@ export function AppForm() {
 
           <Button type="submit" className="w-full" disabled={loading}>
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Create App
+            {tCommon('create')} App
           </Button>
         </form>
       </CardContent>

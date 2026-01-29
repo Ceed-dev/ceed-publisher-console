@@ -1,0 +1,142 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "cancel": "Cancel",
+    "save": "Save",
+    "create": "Create",
+    "delete": "Delete",
+    "back": "Back",
+    "signOut": "Sign Out",
+    "created": "Created {date}",
+    "web": "Web",
+    "ios": "iOS"
+  },
+  "nav": {
+    "apps": "Apps",
+    "team": "Team",
+    "organization": "Organization",
+    "settings": "Settings"
+  },
+  "login": {
+    "title": "Ceed Publisher Console",
+    "description": "Sign in to manage your apps and monitor performance",
+    "signInWithGoogle": "Sign in with Google",
+    "signingIn": "Signing in...",
+    "error": "Failed to sign in. Please try again."
+  },
+  "apps": {
+    "title": "Apps",
+    "description": "Manage apps for {orgName}",
+    "newApp": "New App",
+    "createApp": "Create App",
+    "noApps": {
+      "title": "No Apps Yet",
+      "description": "Create your first app to start integrating the Ceed Ads SDK"
+    },
+    "noOrg": {
+      "title": "No Organization",
+      "description": "Create an organization to start adding apps"
+    },
+    "createOrg": "Create Organization",
+    "notFound": "App Not Found",
+    "notFoundDescription": "The app you are looking for does not exist.",
+    "appId": "App ID: {appId}"
+  },
+  "appForm": {
+    "title": "Create a New App",
+    "description": "Add a new app to integrate the Ceed Ads SDK",
+    "appName": "App Name",
+    "appNamePlaceholder": "My Awesome App",
+    "appNameRequired": "App name is required",
+    "platforms": "Platforms",
+    "platformRequired": "Select at least one platform",
+    "selectOrg": "Please select an organization",
+    "backToApps": "Back to Apps"
+  },
+  "appDetail": {
+    "logs": "Logs",
+    "integration": "Integration",
+    "settings": "Settings",
+    "overview": "Overview"
+  },
+  "appSettings": {
+    "requestSettings": "Request Settings",
+    "requestSettingsDesc": "Configure how ad requests are handled",
+    "cooldown": "Cooldown (seconds)",
+    "cooldownDesc": "Minimum time between ad requests from the same user",
+    "allowedOrigins": "Allowed Origins",
+    "allowedOriginsPlaceholder": "https://example.com",
+    "allowedOriginsDesc": "Leave empty to allow all origins",
+    "invalidUrl": "Invalid URL format",
+    "languageSettings": "Language Settings",
+    "languageSettingsDesc": "Configure supported languages for ads",
+    "english": "English",
+    "japanese": "Japanese",
+    "privacySettings": "Privacy Settings",
+    "privacySettingsDesc": "Configure how context text is logged",
+    "contextLoggingMode": "Context Logging Mode",
+    "loggingNone": "None - Do not log context",
+    "loggingTruncated": "Truncated - First 64 characters",
+    "loggingHashed": "Hashed - SHA-256 hash only",
+    "loggingFull": "Full - Store complete text",
+    "atLeastOneLanguage": "At least one language is required",
+    "saveSettings": "Save Settings",
+    "settingsSaved": "Settings saved successfully"
+  },
+  "team": {
+    "title": "Team",
+    "description": "Manage members of {orgName}",
+    "inviteMember": "Invite Member",
+    "noOrg": "Select an organization to manage team members",
+    "email": "Email",
+    "emailAddress": "Email Address",
+    "emailPlaceholder": "colleague@example.com",
+    "role": "Role",
+    "joined": "Joined",
+    "actions": "Actions",
+    "owner": "Owner",
+    "developer": "Developer",
+    "analyst": "Analyst",
+    "ownerDesc": "Owner - Full access",
+    "developerDesc": "Developer - Manage apps",
+    "analystDesc": "Analyst - View only",
+    "sendInvite": "Send Invite",
+    "inviteTitle": "Invite Team Member",
+    "confirmRemove": "Are you sure you want to remove this member?"
+  },
+  "organization": {
+    "title": "Organization Settings",
+    "description": "Manage your organization",
+    "name": "Organization Name",
+    "nameDesc": "Update your organization's display name",
+    "namePlaceholder": "Organization name",
+    "id": "Organization ID",
+    "idDesc": "Your unique organization identifier",
+    "saveChanges": "Save Changes",
+    "updated": "Organization updated successfully"
+  },
+  "orgSwitcher": {
+    "createOrg": "Create Organization"
+  },
+  "newOrg": {
+    "title": "Create Organization",
+    "description": "Set up your organization to start managing apps",
+    "name": "Organization Name",
+    "namePlaceholder": "My Company",
+    "nameRequired": "Organization name is required",
+    "create": "Create Organization"
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Manage your personal preferences",
+    "defaultLanguage": "Default Language",
+    "defaultLanguageDesc": "Set the default language for new apps you create",
+    "appearance": "Appearance",
+    "appearanceDesc": "Customize the look and feel of the application",
+    "theme": "Theme",
+    "themeDesc": "Switch between light and dark mode",
+    "english": "English",
+    "japanese": "Japanese"
+  }
+}

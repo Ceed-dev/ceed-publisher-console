@@ -7,12 +7,15 @@ import { Globe, Smartphone, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { timestampToDate } from '@/lib/utils/timestamp';
+import { useTranslations } from 'next-intl';
 
 interface AppCardProps {
   app: App;
 }
 
 export function AppCard({ app }: AppCardProps) {
+  const t = useTranslations('common');
+
   return (
     <Link href={`/apps/${app.appId}`}>
       <Card className="cursor-pointer transition-shadow hover:shadow-md">
@@ -36,12 +39,12 @@ export function AppCard({ app }: AppCardProps) {
                     ) : (
                       <Smartphone className="h-4 w-4" />
                     )}
-                    {platform === 'web' ? 'Web' : 'iOS'}
+                    {platform === 'web' ? t('web') : t('ios')}
                   </span>
                 ))}
               </div>
               <p className="text-xs text-muted-foreground">
-                Created {format(timestampToDate(app.meta.createdAt), 'MMM d, yyyy')}
+                {t('created', { date: format(timestampToDate(app.meta.createdAt), 'MMM d, yyyy') })}
               </p>
             </div>
             <ArrowRight className="h-5 w-5 text-muted-foreground" />

@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useOrganization } from '@/contexts/organization-context';
 import { Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function OrganizationSettingsPage() {
   const { currentOrg, refetchOrganizations } = useOrganization();
@@ -14,6 +15,7 @@ export default function OrganizationSettingsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const t = useTranslations('organization');
 
   // Update name when currentOrg changes
   if (currentOrg && name !== currentOrg.name && !loading) {
@@ -61,16 +63,16 @@ export default function OrganizationSettingsPage() {
   return (
     <>
       <Header
-        title="Organization Settings"
-        description="Manage your organization"
+        title={t('title')}
+        description={t('description')}
       />
       <main className="p-6">
         <div className="max-w-2xl space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Organization Name</CardTitle>
+              <CardTitle>{t('name')}</CardTitle>
               <CardDescription>
-                Update your organization&apos;s display name
+                {t('nameDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -78,14 +80,14 @@ export default function OrganizationSettingsPage() {
                 <Input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Organization name"
+                  placeholder={t('namePlaceholder')}
                   required
                 />
                 {error && <p className="text-sm text-destructive">{error}</p>}
-                {success && <p className="text-sm text-green-600">Organization updated successfully</p>}
+                {success && <p className="text-sm text-green-600">{t('updated')}</p>}
                 <Button type="submit" disabled={loading || name.trim() === currentOrg.name}>
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Save Changes
+                  {t('saveChanges')}
                 </Button>
               </form>
             </CardContent>
@@ -93,9 +95,9 @@ export default function OrganizationSettingsPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Organization ID</CardTitle>
+              <CardTitle>{t('id')}</CardTitle>
               <CardDescription>
-                Your unique organization identifier
+                {t('idDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent>

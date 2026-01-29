@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ArrowLeft, Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function NewOrganizationPage() {
   const router = useRouter();
@@ -16,12 +17,14 @@ export default function NewOrganizationPage() {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const t = useTranslations('newOrg');
+  const tCommon = useTranslations('common');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!name.trim()) {
-      setError('Organization name is required');
+      setError(t('nameRequired'));
       return;
     }
 
@@ -56,11 +59,11 @@ export default function NewOrganizationPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Header title="Create Organization" description="Set up a new organization">
+      <Header title={t('title')} description={t('description')}>
         <Link href="/apps">
           <Button variant="outline">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
+            {tCommon('back')}
           </Button>
         </Link>
       </Header>
@@ -68,23 +71,23 @@ export default function NewOrganizationPage() {
       <div className="flex-1 p-6">
         <Card className="max-w-lg">
           <CardHeader>
-            <CardTitle>New Organization</CardTitle>
+            <CardTitle>{t('title')}</CardTitle>
             <CardDescription>
-              Create an organization to manage your apps and team members
+              {t('description')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <label htmlFor="name" className="text-sm font-medium">
-                  Organization Name
+                  {t('name')}
                 </label>
                 <Input
                   id="name"
-                  placeholder="My Company"
+                  placeholder={t('namePlaceholder')}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  error={error && !name ? 'Organization name is required' : undefined}
+                  error={error && !name ? t('nameRequired') : undefined}
                 />
               </div>
 
@@ -94,7 +97,7 @@ export default function NewOrganizationPage() {
 
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Create Organization
+                {t('create')}
               </Button>
             </form>
           </CardContent>

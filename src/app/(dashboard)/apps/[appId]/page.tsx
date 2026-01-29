@@ -13,10 +13,13 @@ import { useAppQuery } from '@/hooks/use-apps-query';
 import { useAnalyticsQuery } from '@/hooks/use-analytics-query';
 import { startOfDay, endOfDay, subDays } from 'date-fns';
 import { Settings, FileText, Code, BarChart3 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function AppOverviewPage() {
   const params = useParams();
   const appId = params.appId as string;
+  const t = useTranslations('apps');
+  const tDetail = useTranslations('appDetail');
 
   const { data: app, isLoading, error: appError } = useAppQuery(appId);
   const [timeRange, setTimeRange] = useState<TimeRange>({
@@ -42,10 +45,10 @@ export default function AppOverviewPage() {
   if (!app || appError) {
     return (
       <div className="flex min-h-screen flex-col">
-        <Header title="App Not Found" />
+        <Header title={t('notFound')} />
         <div className="flex flex-1 items-center justify-center">
           <p className="text-muted-foreground">
-            {appError ? String(appError) : 'The app you are looking for does not exist.'}
+            {appError ? String(appError) : t('notFoundDescription')}
           </p>
         </div>
       </div>
@@ -54,24 +57,24 @@ export default function AppOverviewPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Header title={app.appName} description={`App ID: ${app.appId}`}>
+      <Header title={app.appName} description={t('appId', { appId: app.appId })}>
         <div className="flex items-center gap-2">
           <Link href={`/apps/${appId}/logs`}>
             <Button variant="outline" size="sm">
               <FileText className="mr-2 h-4 w-4" />
-              Logs
+              {tDetail('logs')}
             </Button>
           </Link>
           <Link href={`/apps/${appId}/integration`}>
             <Button variant="outline" size="sm">
               <Code className="mr-2 h-4 w-4" />
-              Integration
+              {tDetail('integration')}
             </Button>
           </Link>
           <Link href={`/apps/${appId}/settings`}>
             <Button variant="outline" size="sm">
               <Settings className="mr-2 h-4 w-4" />
-              Settings
+              {tDetail('settings')}
             </Button>
           </Link>
         </div>
@@ -83,7 +86,7 @@ export default function AppOverviewPage() {
             <TabsList>
               <TabsTrigger value="overview">
                 <BarChart3 className="mr-2 h-4 w-4" />
-                Overview
+                {tDetail('overview')}
               </TabsTrigger>
             </TabsList>
             <TimeRangePicker value={timeRange} onChange={setTimeRange} />

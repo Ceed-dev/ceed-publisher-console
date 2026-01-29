@@ -4,11 +4,13 @@ import { useOrganization } from '@/hooks/use-organization';
 import { ChevronDown, Plus, Building2 } from 'lucide-react';
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 
 export function OrgSwitcher() {
   const { organizations, currentOrg, setCurrentOrg, loading } = useOrganization();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const t = useTranslations('orgSwitcher');
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -37,7 +39,7 @@ export function OrgSwitcher() {
         className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent"
       >
         <Plus className="h-4 w-4" />
-        Create Organization
+        {t('createOrg')}
       </Link>
     );
   }
@@ -82,7 +84,7 @@ export function OrgSwitcher() {
               className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
             >
               <Plus className="h-4 w-4" />
-              Create Organization
+              {t('createOrg')}
             </Link>
           </div>
         </div>

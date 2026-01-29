@@ -8,6 +8,7 @@ import { Select } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Plus, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface SettingsFormProps {
   app: App;
@@ -20,6 +21,7 @@ export function SettingsForm({ app, onSave }: SettingsFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const t = useTranslations('appSettings');
 
   const handleAddOrigin = () => {
     if (!newOrigin.trim()) return;
@@ -32,7 +34,7 @@ export function SettingsForm({ app, onSave }: SettingsFormProps) {
       }));
       setNewOrigin('');
     } catch {
-      setError('Invalid URL format');
+      setError(t('invalidUrl'));
     }
   };
 
@@ -56,7 +58,7 @@ export function SettingsForm({ app, onSave }: SettingsFormProps) {
     e.preventDefault();
 
     if (settings.supportedLanguages.length === 0) {
-      setError('At least one language is required');
+      setError(t('atLeastOneLanguage'));
       return;
     }
 
@@ -79,13 +81,13 @@ export function SettingsForm({ app, onSave }: SettingsFormProps) {
     <form onSubmit={handleSubmit} className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Request Settings</CardTitle>
-          <CardDescription>Configure how ad requests are handled</CardDescription>
+          <CardTitle>{t('requestSettings')}</CardTitle>
+          <CardDescription>{t('requestSettingsDesc')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <label htmlFor="cooldown" className="text-sm font-medium">
-              Cooldown (seconds)
+              {t('cooldown')}
             </label>
             <Input
               id="cooldown"
@@ -101,15 +103,15 @@ export function SettingsForm({ app, onSave }: SettingsFormProps) {
               }
             />
             <p className="text-xs text-muted-foreground">
-              Minimum time between ad requests from the same user
+              {t('cooldownDesc')}
             </p>
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Allowed Origins</label>
+            <label className="text-sm font-medium">{t('allowedOrigins')}</label>
             <div className="flex gap-2">
               <Input
-                placeholder="https://example.com"
+                placeholder={t('allowedOriginsPlaceholder')}
                 value={newOrigin}
                 onChange={(e) => setNewOrigin(e.target.value)}
               />
@@ -134,7 +136,7 @@ export function SettingsForm({ app, onSave }: SettingsFormProps) {
               </div>
             )}
             <p className="text-xs text-muted-foreground">
-              Leave empty to allow all origins
+              {t('allowedOriginsDesc')}
             </p>
           </div>
         </CardContent>
@@ -142,8 +144,8 @@ export function SettingsForm({ app, onSave }: SettingsFormProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Language Settings</CardTitle>
-          <CardDescription>Configure supported languages for ads</CardDescription>
+          <CardTitle>{t('languageSettings')}</CardTitle>
+          <CardDescription>{t('languageSettingsDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex gap-3">
@@ -158,7 +160,7 @@ export function SettingsForm({ app, onSave }: SettingsFormProps) {
                 }
               `}
             >
-              <span className="font-medium">English</span>
+              <span className="font-medium">{t('english')}</span>
             </button>
             <button
               type="button"
@@ -171,7 +173,7 @@ export function SettingsForm({ app, onSave }: SettingsFormProps) {
                 }
               `}
             >
-              <span className="font-medium">Japanese</span>
+              <span className="font-medium">{t('japanese')}</span>
             </button>
           </div>
         </CardContent>
@@ -179,13 +181,13 @@ export function SettingsForm({ app, onSave }: SettingsFormProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Privacy Settings</CardTitle>
-          <CardDescription>Configure how context text is logged</CardDescription>
+          <CardTitle>{t('privacySettings')}</CardTitle>
+          <CardDescription>{t('privacySettingsDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
             <label htmlFor="contextLogging" className="text-sm font-medium">
-              Context Logging Mode
+              {t('contextLoggingMode')}
             </label>
             <Select
               id="contextLogging"
@@ -197,10 +199,10 @@ export function SettingsForm({ app, onSave }: SettingsFormProps) {
                 }))
               }
               options={[
-                { value: 'none', label: 'None - Do not log context' },
-                { value: 'truncated', label: 'Truncated - First 64 characters' },
-                { value: 'hashed', label: 'Hashed - SHA-256 hash only' },
-                { value: 'full', label: 'Full - Store complete text' },
+                { value: 'none', label: t('loggingNone') },
+                { value: 'truncated', label: t('loggingTruncated') },
+                { value: 'hashed', label: t('loggingHashed') },
+                { value: 'full', label: t('loggingFull') },
               ]}
             />
           </div>
@@ -208,11 +210,11 @@ export function SettingsForm({ app, onSave }: SettingsFormProps) {
       </Card>
 
       {error && <p className="text-sm text-destructive">{error}</p>}
-      {success && <p className="text-sm text-green-600">Settings saved successfully</p>}
+      {success && <p className="text-sm text-green-600">{t('settingsSaved')}</p>}
 
       <Button type="submit" disabled={loading}>
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        Save Settings
+        {t('saveSettings')}
       </Button>
     </form>
   );

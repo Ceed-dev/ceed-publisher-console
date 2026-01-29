@@ -4,9 +4,11 @@ import { Header } from '@/components/layout/header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useUserSettings } from '@/contexts/user-settings-context';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
+import { useTranslations } from 'next-intl';
 
 export default function SettingsPage() {
   const { settings, updateSettings, loading } = useUserSettings();
+  const t = useTranslations('settings');
 
   if (loading) {
     return (
@@ -19,16 +21,16 @@ export default function SettingsPage() {
   return (
     <>
       <Header
-        title="Settings"
-        description="Manage your personal preferences"
+        title={t('title')}
+        description={t('description')}
       />
       <main className="p-6">
         <div className="max-w-2xl space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Default Language</CardTitle>
+              <CardTitle>{t('defaultLanguage')}</CardTitle>
               <CardDescription>
-                Set the default language for new apps you create
+                {t('defaultLanguageDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -44,7 +46,7 @@ export default function SettingsPage() {
                     }
                   `}
                 >
-                  <span className="font-medium">English</span>
+                  <span className="font-medium">{t('english')}</span>
                 </button>
                 <button
                   type="button"
@@ -57,7 +59,7 @@ export default function SettingsPage() {
                     }
                   `}
                 >
-                  <span className="font-medium">Japanese</span>
+                  <span className="font-medium">{t('japanese')}</span>
                 </button>
               </div>
             </CardContent>
@@ -65,17 +67,17 @@ export default function SettingsPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Appearance</CardTitle>
+              <CardTitle>{t('appearance')}</CardTitle>
               <CardDescription>
-                Customize the look and feel of the application
+                {t('appearanceDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Theme</p>
+                  <p className="font-medium">{t('theme')}</p>
                   <p className="text-sm text-muted-foreground">
-                    Switch between light and dark mode
+                    {t('themeDesc')}
                   </p>
                 </div>
                 <ThemeToggle />
