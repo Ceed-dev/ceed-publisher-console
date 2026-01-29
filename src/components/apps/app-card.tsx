@@ -15,6 +15,7 @@ interface AppCardProps {
 
 export function AppCard({ app }: AppCardProps) {
   const t = useTranslations('common');
+  const tStatus = useTranslations('appSettingsPage');
 
   return (
     <Link href={`/apps/${app.appId}`}>
@@ -22,7 +23,7 @@ export function AppCard({ app }: AppCardProps) {
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-lg font-semibold">{app.appName}</CardTitle>
           <Badge variant={app.status === 'active' ? 'success' : 'destructive'}>
-            {app.status}
+            {app.status === 'active' ? tStatus('active') : tStatus('suspended')}
           </Badge>
         </CardHeader>
         <CardContent>
