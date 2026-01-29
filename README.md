@@ -36,6 +36,8 @@ A media-side dashboard for publishers integrating the Ceed Ads SDK. Partners can
 | Integration Guide | Implemented |
 | App Settings (cooldown, origins, languages, context mode) | Implemented |
 | Light/Dark Mode | Implemented |
+| Internationalization (i18n) | Implemented |
+| User Settings (language, theme) | Implemented |
 | SDK Request API (`/api/requests`) | Implemented |
 | SDK Event API (`/api/events`) | Implemented |
 
@@ -50,6 +52,7 @@ A media-side dashboard for publishers integrating the Ceed Ads SDK. Partners can
 - **Database:** Firestore
 - **State Management:** TanStack Query (React Query)
 - **Validation:** Zod
+- **Internationalization:** next-intl
 - **Icons:** Lucide React
 - **Date Handling:** date-fns
 - **Deployment:** Vercel
@@ -115,6 +118,17 @@ A media-side dashboard for publishers integrating the Ceed Ads SDK. Partners can
 - Light/Dark mode toggle
 - Persisted via next-themes
 
+### Internationalization (i18n)
+- Multi-language UI support (English, Japanese)
+- Language switching via user settings
+- All UI text translatable via next-intl
+- Locale files: `src/messages/en.json`, `src/messages/ja.json`
+
+### User Settings
+- Default language preference (English/Japanese)
+- Theme preference (Light/Dark/System)
+- Persisted to localStorage
+
 ### Data Management & Performance
 - **TanStack Query (React Query)** - All data fetching uses React Query with 30-minute staleTime for intelligent caching
 - **API Routes with Admin SDK** - All Firestore access goes through authenticated API routes using Firebase Admin SDK
@@ -178,6 +192,8 @@ src/
 │   │   │   │   └── integration/  # Integration guide
 │   │   │   └── new/              # Create app
 │   │   ├── members/              # Team management
+│   │   ├── settings/             # User settings
+│   │   ├── organization/settings # Organization settings
 │   │   └── organizations/new/    # Create organization
 │   └── api/                      # API routes
 │       ├── auth/                 # Session management
@@ -198,6 +214,8 @@ src/
 │   └── utils/                    # Helper functions
 ├── hooks/                        # React hooks
 ├── contexts/                     # React contexts
+├── messages/                     # i18n translation files (en.json, ja.json)
+├── i18n.ts                       # i18n configuration
 └── types/                        # TypeScript types
 ```
 
@@ -337,6 +355,7 @@ FIREBASE_ADMIN_PRIVATE_KEY=
 | POST | `/api/auth/session` | Create session from Firebase ID token |
 | POST | `/api/auth/logout` | Clear session cookie |
 | GET/POST | `/api/dashboard/organizations` | List/Create organizations |
+| GET/PATCH | `/api/dashboard/organizations/[orgId]` | Get/Update organization |
 | GET/POST | `/api/dashboard/apps` | List/Create apps |
 | GET/PATCH | `/api/dashboard/apps/[appId]` | Get/Update app |
 | GET | `/api/dashboard/apps/[appId]/analytics` | Get analytics metrics |
