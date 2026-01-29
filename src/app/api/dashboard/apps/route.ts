@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { orgId, ...appData } = body;
+    const { orgId, defaultLanguage, ...appData } = body;
 
     if (!orgId) {
       return NextResponse.json({ error: 'orgId is required' }, { status: 400 });
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const app = await createApp(orgId, validation.data);
+    const app = await createApp(orgId, validation.data, { defaultLanguage });
 
     await createAuditLog({
       orgId,

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutGrid, Users, Settings, LogOut } from 'lucide-react';
+import { LayoutGrid, Users, Settings, Building2, LogOut } from 'lucide-react';
 import { OrgSwitcher } from './org-switcher';
 import { ThemeToggle } from './theme-toggle';
 import { useAuth } from '@/hooks/use-auth';
@@ -10,6 +10,8 @@ import { useAuth } from '@/hooks/use-auth';
 const navigation = [
   { name: 'Apps', href: '/apps', icon: LayoutGrid },
   { name: 'Team', href: '/members', icon: Users },
+  { name: 'Organization', href: '/organization/settings', icon: Building2 },
+  { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
 export function Sidebar() {

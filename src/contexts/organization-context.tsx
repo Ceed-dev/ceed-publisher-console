@@ -25,6 +25,20 @@ const OrganizationContext = createContext<OrganizationContextValue | null>(null)
 
 const CURRENT_ORG_KEY = 'cpc_current_org_id';
 
+// Prefetch apps data for an organization
+async function prefetchApps(queryClient: ReturnType<typeof useQueryClient>, orgId: string) {
+  queryClient.prefetchQuery({
+    queryKey: ['apps', orgId],
+    queryFn: async () => {
+      const response = await fetch(`/api/dashboard/apps?orgId=${orgId}`);
+      if (!response.ok) throw new Error('Failed to fetch apps');
+      const data = await response.json();
+      return data.apps;
+    },
+    staleTime: 1000 * 60 * 30,
+  });
+}
+
 export function OrganizationProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -37,7 +51,7 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
   const [currentOrg, setCurrentOrgState] = useState<Organization | null>(null);
   const [initialized, setInitialized] = useState(false);
 
-  // Set initial org from localStorage or first org
+  // Set initial org from localStorage or first org and prefetch apps
   useEffect(() => {
     if (isLoading || initialized) return;
 
@@ -51,17 +65,21 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
       const savedOrgId = localStorage.getItem(CURRENT_ORG_KEY);
       const savedOrg = organizations.find((org) => org.orgId === savedOrgId);
 
-      if (savedOrg) {
-        setCurrentOrgState(savedOrg);
-      } else {
-        setCurrentOrgState(organizations[0]);
+      const selectedOrg = savedOrg || organizations[0];
+      setCurrentOrgState(selectedOrg);
+
+      if (!savedOrg) {
         localStorage.setItem(CURRENT_ORG_KEY, organizations[0].orgId);
       }
+
+      // Prefetch apps data immediately when org is selected
+      prefetchApps(queryClient, selectedOrg.orgId);
+
       setInitialized(true);
     } else if (!isLoading) {
       setInitialized(true);
     }
-  }, [user, organizations, isLoading, initialized]);
+  }, [user, organizations, isLoading, initialized, queryClient]);
 
   // Update currentOrg if it changes in the organizations list
   useEffect(() => {
@@ -85,6 +103,8 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
   const setCurrentOrg = (org: Organization) => {
     setCurrentOrgState(org);
     localStorage.setItem(CURRENT_ORG_KEY, org.orgId);
+    // Prefetch apps when switching organizations
+    prefetchApps(queryClient, org.orgId);
   };
 
   const refetchOrganizations = () => {

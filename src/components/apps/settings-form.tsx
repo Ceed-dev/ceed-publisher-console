@@ -151,10 +151,10 @@ export function SettingsForm({ app, onSave }: SettingsFormProps) {
               type="button"
               onClick={() => toggleLanguage('eng')}
               className={`
-                flex-1 rounded-lg border p-4 text-center transition-colors
+                flex-1 rounded-lg border-2 p-4 text-center transition-all
                 ${settings.supportedLanguages.includes('eng')
-                  ? 'border-primary bg-primary/10 text-primary'
-                  : 'border-input hover:bg-accent'
+                  ? 'border-primary bg-primary/10 text-primary font-semibold'
+                  : 'border-muted bg-muted/30 text-muted-foreground opacity-50'
                 }
               `}
             >
@@ -164,10 +164,10 @@ export function SettingsForm({ app, onSave }: SettingsFormProps) {
               type="button"
               onClick={() => toggleLanguage('jpn')}
               className={`
-                flex-1 rounded-lg border p-4 text-center transition-colors
+                flex-1 rounded-lg border-2 p-4 text-center transition-all
                 ${settings.supportedLanguages.includes('jpn')
-                  ? 'border-primary bg-primary/10 text-primary'
-                  : 'border-input hover:bg-accent'
+                  ? 'border-primary bg-primary/10 text-primary font-semibold'
+                  : 'border-muted bg-muted/30 text-muted-foreground opacity-50'
                 }
               `}
             >

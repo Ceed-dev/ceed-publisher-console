@@ -1,5 +1,5 @@
 import { getAdminDb } from '@/lib/firebase/admin';
-import { App, AppCreate, AppUpdate, AppSettings } from '@/types/app';
+import { App, AppCreate, AppUpdate, AppSettings, SupportedLanguage } from '@/types/app';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 
 const COLLECTION = 'apps';
@@ -11,10 +11,19 @@ const DEFAULT_SETTINGS: AppSettings = {
   contextLoggingMode: 'none',
 };
 
-export async function createApp(orgId: string, data: AppCreate): Promise<App> {
+interface CreateAppOptions {
+  defaultLanguage?: SupportedLanguage;
+}
+
+export async function createApp(orgId: string, data: AppCreate, options?: CreateAppOptions): Promise<App> {
   const db = getAdminDb();
   const appRef = db.collection(COLLECTION).doc();
   const now = Timestamp.now();
+
+  const settings: AppSettings = {
+    ...DEFAULT_SETTINGS,
+    supportedLanguages: options?.defaultLanguage ? [options.defaultLanguage] : DEFAULT_SETTINGS.supportedLanguages,
+  };
 
   const app: App = {
     appId: appRef.id,
@@ -22,7 +31,7 @@ export async function createApp(orgId: string, data: AppCreate): Promise<App> {
     appName: data.appName,
     platforms: data.platforms,
     status: 'active',
-    settings: { ...DEFAULT_SETTINGS },
+    settings,
     meta: {
       createdAt: now,
       updatedAt: now,

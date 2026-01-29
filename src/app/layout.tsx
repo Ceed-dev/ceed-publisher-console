@@ -4,6 +4,7 @@ import './globals.css';
 import { ThemeProvider } from '@/contexts/theme-context';
 import { AuthProvider } from '@/contexts/auth-context';
 import { OrganizationProvider } from '@/contexts/organization-context';
+import { UserSettingsProvider } from '@/contexts/user-settings-context';
 import { QueryProvider } from '@/lib/query-client';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -24,7 +25,9 @@ export default function RootLayout({
         <QueryProvider>
           <ThemeProvider>
             <AuthProvider>
-              <OrganizationProvider>{children}</OrganizationProvider>
+              <OrganizationProvider>
+                <UserSettingsProvider>{children}</UserSettingsProvider>
+              </OrganizationProvider>
             </AuthProvider>
           </ThemeProvider>
         </QueryProvider>

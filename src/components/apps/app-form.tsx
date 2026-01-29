@@ -6,11 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useOrganization } from '@/hooks/use-organization';
+import { useUserSettings } from '@/contexts/user-settings-context';
 import { Globe, Smartphone, Loader2 } from 'lucide-react';
 
 export function AppForm() {
   const router = useRouter();
   const { currentOrg } = useOrganization();
+  const { settings: userSettings } = useUserSettings();
   const [appName, setAppName] = useState('');
   const [platforms, setPlatforms] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -53,6 +55,7 @@ export function AppForm() {
           orgId: currentOrg.orgId,
           appName: appName.trim(),
           platforms,
+          defaultLanguage: userSettings.defaultLanguage,
         }),
       });
 
