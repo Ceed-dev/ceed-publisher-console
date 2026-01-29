@@ -138,5 +138,97 @@
     "themeDesc": "Switch between light and dark mode",
     "english": "English",
     "japanese": "Japanese"
+  },
+  "appSettingsPage": {
+    "title": "Settings",
+    "backToApp": "Back to App",
+    "appStatus": "App Status",
+    "appStatusDesc": "Control whether this app can receive ad requests",
+    "active": "active",
+    "suspended": "suspended",
+    "receivingRequests": "App is receiving ad requests",
+    "notReceivingRequests": "App is not receiving ad requests",
+    "suspendApp": "Suspend App",
+    "activateApp": "Activate App",
+    "suspendedWarning": "This app is currently suspended. Ad requests will be rejected until you activate it."
+  },
+  "integration": {
+    "title": "Integration Guide",
+    "backToApp": "Back to App",
+    "appIdTitle": "App ID",
+    "appIdDesc": "Use this ID to initialize the SDK in your application",
+    "sdkIntegration": "SDK Integration",
+    "sdkIntegrationDesc": "Choose your platform and follow the integration guide",
+    "webTab": "Web",
+    "iosTab": "iOS",
+    "restApiTab": "REST API",
+    "installSdk": "Install the SDK",
+    "initializeAndUse": "Initialize and Use",
+    "addSdkViaSpm": "Add the SDK via Swift Package Manager",
+    "requestAd": "Request an Ad",
+    "trackEvents": "Track Events"
+  },
+  "logs": {
+    "title": "Logs",
+    "backToApp": "Back to App",
+    "requestsTab": "Requests",
+    "eventsTab": "Events",
+    "refresh": "Refresh",
+    "exportCsv": "Export CSV",
+    "noRequestsFound": "No requests found",
+    "noEventsFound": "No events found"
+  },
+  "logFilters": {
+    "allStatuses": "All Statuses",
+    "success": "Success",
+    "error": "Error",
+    "noFill": "No Fill",
+    "allPlatforms": "All Platforms",
+    "web": "Web",
+    "ios": "iOS",
+    "allEvents": "All Events",
+    "impression": "Impression",
+    "click": "Click",
+    "searchByRequestId": "Search by request ID...",
+    "clear": "Clear"
+  },
+  "requestsTable": {
+    "requestId": "Request ID",
+    "status": "Status",
+    "platform": "Platform",
+    "language": "Language",
+    "responseTime": "Response Time",
+    "createdAt": "Created At",
+    "events": "Events",
+    "success": "Success",
+    "error": "Error",
+    "noFill": "No Fill"
+  },
+  "eventsTable": {
+    "eventId": "Event ID",
+    "type": "Type",
+    "requestId": "Request ID",
+    "adId": "Ad ID",
+    "origin": "Origin",
+    "createdAt": "Created At",
+    "impression": "Impression",
+    "click": "Click"
+  },
+  "analytics": {
+    "totalRequests": "Total Requests",
+    "successfulRequests": "Successful Requests",
+    "fillRate": "Fill Rate",
+    "totalImpressions": "Total Impressions",
+    "totalClicks": "Total Clicks",
+    "clickThroughRate": "Click-Through Rate",
+    "noDataAvailable": "No analytics data available",
+    "errorLoadingAnalytics": "Error loading analytics",
+    "updating": "Updating..."
+  },
+  "timeRange": {
+    "today": "Today",
+    "7days": "7 Days",
+    "30days": "30 Days",
+    "90days": "90 Days"
   }
 }

@@ -15,6 +15,7 @@ import { format } from 'date-fns';
 import { ExternalLink } from 'lucide-react';
 import { timestampToDate } from '@/lib/utils/timestamp';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 interface RequestsTableProps {
   requests: AdRequest[];
@@ -23,6 +24,8 @@ interface RequestsTableProps {
 }
 
 export function RequestsTable({ requests, loading, appId }: RequestsTableProps) {
+  const t = useTranslations('requestsTable');
+  const tLogs = useTranslations('logs');
   if (loading) {
     return (
       <div className="space-y-2">
@@ -36,7 +39,7 @@ export function RequestsTable({ requests, loading, appId }: RequestsTableProps) 
   if (requests.length === 0) {
     return (
       <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
-        No requests found
+        {tLogs('noRequestsFound')}
       </div>
     );
   }
@@ -44,11 +47,11 @@ export function RequestsTable({ requests, loading, appId }: RequestsTableProps) 
   const getStatusBadge = (status: AdRequest['status']) => {
     switch (status) {
       case 'success':
-        return <Badge variant="success">Success</Badge>;
+        return <Badge variant="success">{t('success')}</Badge>;
       case 'error':
-        return <Badge variant="destructive">Error</Badge>;
+        return <Badge variant="destructive">{t('error')}</Badge>;
       case 'no_fill':
-        return <Badge variant="warning">No Fill</Badge>;
+        return <Badge variant="warning">{t('noFill')}</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -58,13 +61,13 @@ export function RequestsTable({ requests, loading, appId }: RequestsTableProps) 
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Request ID</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Platform</TableHead>
-          <TableHead>Language</TableHead>
-          <TableHead>Response Time</TableHead>
-          <TableHead>Created At</TableHead>
-          <TableHead>Events</TableHead>
+          <TableHead>{t('requestId')}</TableHead>
+          <TableHead>{t('status')}</TableHead>
+          <TableHead>{t('platform')}</TableHead>
+          <TableHead>{t('language')}</TableHead>
+          <TableHead>{t('responseTime')}</TableHead>
+          <TableHead>{t('createdAt')}</TableHead>
+          <TableHead>{t('events')}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>

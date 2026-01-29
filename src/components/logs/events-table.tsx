@@ -12,6 +12,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { timestampToDate } from '@/lib/utils/timestamp';
+import { useTranslations } from 'next-intl';
 
 interface EventsTableProps {
   events: AdEvent[];
@@ -19,6 +20,8 @@ interface EventsTableProps {
 }
 
 export function EventsTable({ events, loading }: EventsTableProps) {
+  const t = useTranslations('eventsTable');
+  const tLogs = useTranslations('logs');
   if (loading) {
     return (
       <div className="space-y-2">
@@ -32,7 +35,7 @@ export function EventsTable({ events, loading }: EventsTableProps) {
   if (events.length === 0) {
     return (
       <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
-        No events found
+        {tLogs('noEventsFound')}
       </div>
     );
   }
@@ -40,9 +43,9 @@ export function EventsTable({ events, loading }: EventsTableProps) {
   const getEventTypeBadge = (eventType: AdEvent['eventType']) => {
     switch (eventType) {
       case 'impression':
-        return <Badge variant="default">Impression</Badge>;
+        return <Badge variant="default">{t('impression')}</Badge>;
       case 'click':
-        return <Badge variant="success">Click</Badge>;
+        return <Badge variant="success">{t('click')}</Badge>;
       default:
         return <Badge variant="outline">{eventType}</Badge>;
     }
@@ -52,12 +55,12 @@ export function EventsTable({ events, loading }: EventsTableProps) {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Event ID</TableHead>
-          <TableHead>Type</TableHead>
-          <TableHead>Request ID</TableHead>
-          <TableHead>Ad ID</TableHead>
-          <TableHead>Origin</TableHead>
-          <TableHead>Created At</TableHead>
+          <TableHead>{t('eventId')}</TableHead>
+          <TableHead>{t('type')}</TableHead>
+          <TableHead>{t('requestId')}</TableHead>
+          <TableHead>{t('adId')}</TableHead>
+          <TableHead>{t('origin')}</TableHead>
+          <TableHead>{t('createdAt')}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>

@@ -10,10 +10,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { useAppQuery, useInvalidateApps } from '@/hooks/use-apps-query';
 import { ArrowLeft, AlertTriangle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function SettingsPage() {
   const params = useParams();
   const appId = params.appId as string;
+  const t = useTranslations('appSettingsPage');
+  const tApps = useTranslations('apps');
 
   const { data: app, isLoading, error } = useAppQuery(appId);
   const { invalidateApp } = useInvalidateApps();
@@ -59,10 +62,10 @@ export default function SettingsPage() {
   if (!app || error) {
     return (
       <div className="flex min-h-screen flex-col">
-        <Header title="App Not Found" />
+        <Header title={tApps('notFound')} />
         <div className="flex flex-1 items-center justify-center">
           <p className="text-muted-foreground">
-            {error ? String(error) : 'The app you are looking for does not exist.'}
+            {error ? String(error) : tApps('notFoundDescription')}
           </p>
         </div>
       </div>
@@ -71,11 +74,11 @@ export default function SettingsPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Header title="Settings" description={app.appName}>
+      <Header title={t('title')} description={app.appName}>
         <Link href={`/apps/${appId}`}>
           <Button variant="outline">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to App
+            {t('backToApp')}
           </Button>
         </Link>
       </Header>
@@ -83,27 +86,27 @@ export default function SettingsPage() {
       <div className="flex-1 space-y-6 p-6">
         <Card>
           <CardHeader>
-            <CardTitle>App Status</CardTitle>
+            <CardTitle>{t('appStatus')}</CardTitle>
             <CardDescription>
-              Control whether this app can receive ad requests
+              {t('appStatusDesc')}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Badge variant={app.status === 'active' ? 'success' : 'destructive'}>
-                {app.status}
+                {app.status === 'active' ? t('active') : t('suspended')}
               </Badge>
               <span className="text-sm text-muted-foreground">
                 {app.status === 'active'
-                  ? 'App is receiving ad requests'
-                  : 'App is not receiving ad requests'}
+                  ? t('receivingRequests')
+                  : t('notReceivingRequests')}
               </span>
             </div>
             <Button
               variant={app.status === 'active' ? 'destructive' : 'primary'}
               onClick={handleStatusToggle}
             >
-              {app.status === 'active' ? 'Suspend App' : 'Activate App'}
+              {app.status === 'active' ? t('suspendApp') : t('activateApp')}
             </Button>
           </CardContent>
         </Card>
@@ -112,8 +115,7 @@ export default function SettingsPage() {
           <div className="flex items-center gap-2 rounded-lg border border-yellow-500 bg-yellow-500/10 p-4 text-yellow-700 dark:text-yellow-400">
             <AlertTriangle className="h-5 w-5" />
             <span>
-              This app is currently suspended. Ad requests will be rejected until
-              you activate it.
+              {t('suspendedWarning')}
             </span>
           </div>
         )}

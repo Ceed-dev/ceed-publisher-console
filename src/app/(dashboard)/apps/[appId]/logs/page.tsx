@@ -13,11 +13,14 @@ import { ExportButton } from '@/components/logs/export-button';
 import { useAppQuery } from '@/hooks/use-apps-query';
 import { useRequestLogsQuery, useEventLogsQuery } from '@/hooks/use-logs-query';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function LogsPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const appId = params.appId as string;
+  const t = useTranslations('logs');
+  const tApps = useTranslations('apps');
 
   const initialTab = searchParams.get('tab') || 'requests';
   const initialRequestId = searchParams.get('requestId') || '';
@@ -78,10 +81,10 @@ export default function LogsPage() {
   if (!app) {
     return (
       <div className="flex min-h-screen flex-col">
-        <Header title="App Not Found" />
+        <Header title={tApps('notFound')} />
         <div className="flex flex-1 items-center justify-center">
           <p className="text-muted-foreground">
-            The app you are looking for does not exist.
+            {tApps('notFoundDescription')}
           </p>
         </div>
       </div>
@@ -90,11 +93,11 @@ export default function LogsPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Header title="Logs" description={app.appName}>
+      <Header title={t('title')} description={app.appName}>
         <Link href={`/apps/${appId}`}>
           <Button variant="outline">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to App
+            {t('backToApp')}
           </Button>
         </Link>
       </Header>
@@ -103,8 +106,8 @@ export default function LogsPage() {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <div className="flex items-center justify-between">
             <TabsList>
-              <TabsTrigger value="requests">Requests</TabsTrigger>
-              <TabsTrigger value="events">Events</TabsTrigger>
+              <TabsTrigger value="requests">{t('requestsTab')}</TabsTrigger>
+              <TabsTrigger value="events">{t('eventsTab')}</TabsTrigger>
             </TabsList>
             <div className="flex items-center gap-2">
               <Button
@@ -116,7 +119,7 @@ export default function LogsPage() {
                 <RefreshCw
                   className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`}
                 />
-                Refresh
+                {t('refresh')}
               </Button>
               <ExportButton
                 data={activeTab === 'requests' ? requests : events}

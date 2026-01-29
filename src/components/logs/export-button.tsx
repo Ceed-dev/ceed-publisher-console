@@ -7,6 +7,7 @@ import { AdRequest } from '@/types/request';
 import { AdEvent } from '@/types/event';
 import { format } from 'date-fns';
 import { timestampToDate } from '@/lib/utils/timestamp';
+import { useTranslations } from 'next-intl';
 
 interface ExportButtonProps {
   data: AdRequest[] | AdEvent[];
@@ -15,6 +16,7 @@ interface ExportButtonProps {
 }
 
 export function ExportButton({ data, type, appId }: ExportButtonProps) {
+  const t = useTranslations('logs');
   const handleExport = () => {
     let csv: string;
     const timestamp = format(new Date(), 'yyyy-MM-dd-HHmmss');
@@ -71,7 +73,7 @@ export function ExportButton({ data, type, appId }: ExportButtonProps) {
   return (
     <Button variant="outline" size="sm" onClick={handleExport} disabled={data.length === 0}>
       <Download className="h-4 w-4 mr-2" />
-      Export CSV
+      {t('exportCsv')}
     </Button>
   );
 }

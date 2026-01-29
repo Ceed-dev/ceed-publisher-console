@@ -9,10 +9,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useAppQuery } from '@/hooks/use-apps-query';
 import { ArrowLeft, Copy, Check } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function IntegrationPage() {
   const params = useParams();
   const appId = params.appId as string;
+  const t = useTranslations('integration');
+  const tApps = useTranslations('apps');
 
   const { data: app, isLoading, error } = useAppQuery(appId);
   const [copied, setCopied] = useState<string | null>(null);
@@ -34,10 +37,10 @@ export default function IntegrationPage() {
   if (!app || error) {
     return (
       <div className="flex min-h-screen flex-col">
-        <Header title="App Not Found" />
+        <Header title={tApps('notFound')} />
         <div className="flex flex-1 items-center justify-center">
           <p className="text-muted-foreground">
-            {error ? String(error) : 'The app you are looking for does not exist.'}
+            {error ? String(error) : tApps('notFoundDescription')}
           </p>
         </div>
       </div>
@@ -112,11 +115,11 @@ ceedAds.trackClick(requestId: ad.requestId, adId: ad.adId)`;
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Header title="Integration Guide" description={app.appName}>
+      <Header title={t('title')} description={app.appName}>
         <Link href={`/apps/${appId}`}>
           <Button variant="outline">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to App
+            {t('backToApp')}
           </Button>
         </Link>
       </Header>
@@ -124,9 +127,9 @@ ceedAds.trackClick(requestId: ad.requestId, adId: ad.adId)`;
       <div className="flex-1 space-y-6 p-6">
         <Card>
           <CardHeader>
-            <CardTitle>App ID</CardTitle>
+            <CardTitle>{t('appIdTitle')}</CardTitle>
             <CardDescription>
-              Use this ID to initialize the SDK in your application
+              {t('appIdDesc')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -151,26 +154,26 @@ ceedAds.trackClick(requestId: ad.requestId, adId: ad.adId)`;
 
         <Card>
           <CardHeader>
-            <CardTitle>SDK Integration</CardTitle>
+            <CardTitle>{t('sdkIntegration')}</CardTitle>
             <CardDescription>
-              Choose your platform and follow the integration guide
+              {t('sdkIntegrationDesc')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="web">
               <TabsList>
                 <TabsTrigger value="web" disabled={!app.platforms.includes('web')}>
-                  Web
+                  {t('webTab')}
                 </TabsTrigger>
                 <TabsTrigger value="ios" disabled={!app.platforms.includes('ios')}>
-                  iOS
+                  {t('iosTab')}
                 </TabsTrigger>
-                <TabsTrigger value="api">REST API</TabsTrigger>
+                <TabsTrigger value="api">{t('restApiTab')}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="web" className="space-y-4">
                 <div className="mt-4">
-                  <h4 className="mb-2 font-medium">1. Install the SDK</h4>
+                  <h4 className="mb-2 font-medium">1. {t('installSdk')}</h4>
                   <div className="relative">
                     <pre className="overflow-x-auto rounded bg-muted p-4 font-mono text-sm">
                       npm install @ceed/ads-sdk
@@ -191,7 +194,7 @@ ceedAds.trackClick(requestId: ad.requestId, adId: ad.adId)`;
                 </div>
 
                 <div>
-                  <h4 className="mb-2 font-medium">2. Initialize and Use</h4>
+                  <h4 className="mb-2 font-medium">2. {t('initializeAndUse')}</h4>
                   <div className="relative">
                     <pre className="overflow-x-auto rounded bg-muted p-4 font-mono text-sm">
                       {webCode}
@@ -214,7 +217,7 @@ ceedAds.trackClick(requestId: ad.requestId, adId: ad.adId)`;
 
               <TabsContent value="ios" className="space-y-4">
                 <div className="mt-4">
-                  <h4 className="mb-2 font-medium">1. Add the SDK via Swift Package Manager</h4>
+                  <h4 className="mb-2 font-medium">1. {t('addSdkViaSpm')}</h4>
                   <div className="relative">
                     <pre className="overflow-x-auto rounded bg-muted p-4 font-mono text-sm">
                       https://github.com/ceed-ads/ios-sdk
@@ -223,7 +226,7 @@ ceedAds.trackClick(requestId: ad.requestId, adId: ad.adId)`;
                 </div>
 
                 <div>
-                  <h4 className="mb-2 font-medium">2. Initialize and Use</h4>
+                  <h4 className="mb-2 font-medium">2. {t('initializeAndUse')}</h4>
                   <div className="relative">
                     <pre className="overflow-x-auto rounded bg-muted p-4 font-mono text-sm">
                       {iosCode}
@@ -246,7 +249,7 @@ ceedAds.trackClick(requestId: ad.requestId, adId: ad.adId)`;
 
               <TabsContent value="api" className="space-y-4">
                 <div className="mt-4">
-                  <h4 className="mb-2 font-medium">Request an Ad</h4>
+                  <h4 className="mb-2 font-medium">{t('requestAd')}</h4>
                   <div className="relative">
                     <pre className="overflow-x-auto rounded bg-muted p-4 font-mono text-sm whitespace-pre-wrap">
                       {apiRequestExample}
@@ -267,7 +270,7 @@ ceedAds.trackClick(requestId: ad.requestId, adId: ad.adId)`;
                 </div>
 
                 <div>
-                  <h4 className="mb-2 font-medium">Track Events</h4>
+                  <h4 className="mb-2 font-medium">{t('trackEvents')}</h4>
                   <div className="relative">
                     <pre className="overflow-x-auto rounded bg-muted p-4 font-mono text-sm whitespace-pre-wrap">
                       {apiEventExample}

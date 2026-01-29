@@ -4,21 +4,19 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { TimeRange, TimeRangePreset } from '@/types/analytics';
 import { startOfDay, endOfDay, subDays } from 'date-fns';
+import { useTranslations } from 'next-intl';
 
 interface TimeRangePickerProps {
   value: TimeRange;
   onChange: (range: TimeRange) => void;
 }
 
-const presets: { label: string; value: TimeRangePreset }[] = [
-  { label: 'Today', value: 'today' },
-  { label: '7 Days', value: '7d' },
-  { label: '30 Days', value: '30d' },
-  { label: '90 Days', value: '90d' },
-];
+const presetKeys = ['today', '7days', '30days', '90days'] as const;
+const presetValues: TimeRangePreset[] = ['today', '7d', '30d', '90d'];
 
 export function TimeRangePicker({ value, onChange }: TimeRangePickerProps) {
   const [activePreset, setActivePreset] = useState<TimeRangePreset>('7d');
+  const t = useTranslations('timeRange');
 
   const handlePresetClick = (preset: TimeRangePreset) => {
     setActivePreset(preset);
@@ -49,14 +47,14 @@ export function TimeRangePicker({ value, onChange }: TimeRangePickerProps) {
 
   return (
     <div className="flex items-center gap-2">
-      {presets.map((preset) => (
+      {presetKeys.map((key, index) => (
         <Button
-          key={preset.value}
-          variant={activePreset === preset.value ? 'primary' : 'outline'}
+          key={presetValues[index]}
+          variant={activePreset === presetValues[index] ? 'primary' : 'outline'}
           size="sm"
-          onClick={() => handlePresetClick(preset.value)}
+          onClick={() => handlePresetClick(presetValues[index])}
         >
-          {preset.label}
+          {t(key)}
         </Button>
       ))}
     </div>

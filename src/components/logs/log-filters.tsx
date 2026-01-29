@@ -4,6 +4,7 @@ import { Select } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface LogFiltersProps {
   filters: {
@@ -17,23 +18,25 @@ interface LogFiltersProps {
 }
 
 export function LogFilters({ filters, onChange, type }: LogFiltersProps) {
+  const t = useTranslations('logFilters');
+
   const statusOptions = [
-    { value: '', label: 'All Statuses' },
-    { value: 'success', label: 'Success' },
-    { value: 'error', label: 'Error' },
-    { value: 'no_fill', label: 'No Fill' },
+    { value: '', label: t('allStatuses') },
+    { value: 'success', label: t('success') },
+    { value: 'error', label: t('error') },
+    { value: 'no_fill', label: t('noFill') },
   ];
 
   const platformOptions = [
-    { value: '', label: 'All Platforms' },
-    { value: 'web', label: 'Web' },
-    { value: 'ios', label: 'iOS' },
+    { value: '', label: t('allPlatforms') },
+    { value: 'web', label: t('web') },
+    { value: 'ios', label: t('ios') },
   ];
 
   const eventTypeOptions = [
-    { value: '', label: 'All Events' },
-    { value: 'impression', label: 'Impression' },
-    { value: 'click', label: 'Click' },
+    { value: '', label: t('allEvents') },
+    { value: 'impression', label: t('impression') },
+    { value: 'click', label: t('click') },
   ];
 
   const handleClear = () => {
@@ -71,7 +74,7 @@ export function LogFilters({ filters, onChange, type }: LogFiltersProps) {
       <div className="relative flex-1 max-w-xs">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder={type === 'requests' ? 'Search by request ID...' : 'Search by request ID...'}
+          placeholder={t('searchByRequestId')}
           value={filters.search || ''}
           onChange={(e) => onChange({ ...filters, search: e.target.value || undefined })}
           className="pl-9"
@@ -81,7 +84,7 @@ export function LogFilters({ filters, onChange, type }: LogFiltersProps) {
       {Object.values(filters).some((v) => v) && (
         <Button variant="ghost" size="sm" onClick={handleClear}>
           <X className="h-4 w-4 mr-1" />
-          Clear
+          {t('clear')}
         </Button>
       )}
     </div>

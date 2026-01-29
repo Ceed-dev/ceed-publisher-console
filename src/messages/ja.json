@@ -138,5 +138,97 @@
     "themeDesc": "ライトモードとダークモードを切り替え",
     "english": "English",
     "japanese": "日本語"
+  },
+  "appSettingsPage": {
+    "title": "設定",
+    "backToApp": "アプリに戻る",
+    "appStatus": "アプリステータス",
+    "appStatusDesc": "このアプリが広告リクエストを受信できるかどうかを制御",
+    "active": "有効",
+    "suspended": "停止中",
+    "receivingRequests": "アプリは広告リクエストを受信中",
+    "notReceivingRequests": "アプリは広告リクエストを受信していません",
+    "suspendApp": "アプリを停止",
+    "activateApp": "アプリを有効化",
+    "suspendedWarning": "このアプリは現在停止中です。有効化するまで広告リクエストは拒否されます。"
+  },
+  "integration": {
+    "title": "統合ガイド",
+    "backToApp": "アプリに戻る",
+    "appIdTitle": "アプリID",
+    "appIdDesc": "このIDを使用してアプリケーションでSDKを初期化",
+    "sdkIntegration": "SDK統合",
+    "sdkIntegrationDesc": "プラットフォームを選択して統合ガイドに従ってください",
+    "webTab": "Web",
+    "iosTab": "iOS",
+    "restApiTab": "REST API",
+    "installSdk": "SDKをインストール",
+    "initializeAndUse": "初期化と使用",
+    "addSdkViaSpm": "Swift Package ManagerでSDKを追加",
+    "requestAd": "広告をリクエスト",
+    "trackEvents": "イベントを追跡"
+  },
+  "logs": {
+    "title": "ログ",
+    "backToApp": "アプリに戻る",
+    "requestsTab": "リクエスト",
+    "eventsTab": "イベント",
+    "refresh": "更新",
+    "exportCsv": "CSVエクスポート",
+    "noRequestsFound": "リクエストが見つかりません",
+    "noEventsFound": "イベントが見つかりません"
+  },
+  "logFilters": {
+    "allStatuses": "すべてのステータス",
+    "success": "成功",
+    "error": "エラー",
+    "noFill": "フィルなし",
+    "allPlatforms": "すべてのプラットフォーム",
+    "web": "Web",
+    "ios": "iOS",
+    "allEvents": "すべてのイベント",
+    "impression": "インプレッション",
+    "click": "クリック",
+    "searchByRequestId": "リクエストIDで検索...",
+    "clear": "クリア"
+  },
+  "requestsTable": {
+    "requestId": "リクエストID",
+    "status": "ステータス",
+    "platform": "プラットフォーム",
+    "language": "言語",
+    "responseTime": "応答時間",
+    "createdAt": "作成日時",
+    "events": "イベント",
+    "success": "成功",
+    "error": "エラー",
+    "noFill": "フィルなし"
+  },
+  "eventsTable": {
+    "eventId": "イベントID",
+    "type": "タイプ",
+    "requestId": "リクエストID",
+    "adId": "広告ID",
+    "origin": "オリジン",
+    "createdAt": "作成日時",
+    "impression": "インプレッション",
+    "click": "クリック"
+  },
+  "analytics": {
+    "totalRequests": "総リクエスト数",
+    "successfulRequests": "成功リクエスト数",
+    "fillRate": "フィル率",
+    "totalImpressions": "総インプレッション数",
+    "totalClicks": "総クリック数",
+    "clickThroughRate": "クリック率",
+    "noDataAvailable": "分析データがありません",
+    "errorLoadingAnalytics": "分析データの読み込みエラー",
+    "updating": "更新中..."
+  },
+  "timeRange": {
+    "today": "今日",
+    "7days": "7日間",
+    "30days": "30日間",
+    "90days": "90日間"
   }
 }

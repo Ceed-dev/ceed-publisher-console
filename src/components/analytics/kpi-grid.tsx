@@ -3,6 +3,7 @@
 import { AnalyticsMetrics } from '@/types/analytics';
 import { KPICard } from './kpi-card';
 import { Activity, CheckCircle, BarChart3, Eye, MousePointer, Target } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface KPIGridProps {
   metrics: AnalyticsMetrics | null;
@@ -12,6 +13,7 @@ interface KPIGridProps {
 }
 
 export function KPIGrid({ metrics, loading, isRefreshing, error }: KPIGridProps) {
+  const t = useTranslations('analytics');
   // Only show skeleton on initial load with no data
   if (loading && !metrics) {
     return (
@@ -29,7 +31,7 @@ export function KPIGrid({ metrics, loading, isRefreshing, error }: KPIGridProps)
   if (error && !metrics) {
     return (
       <div className="rounded-lg border border-destructive bg-card p-8 text-center text-destructive">
-        Error loading analytics: {error}
+        {t('errorLoadingAnalytics')}: {error}
       </div>
     );
   }
@@ -37,7 +39,7 @@ export function KPIGrid({ metrics, loading, isRefreshing, error }: KPIGridProps)
   if (!metrics) {
     return (
       <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
-        No analytics data available
+        {t('noDataAvailable')}
       </div>
     );
   }
@@ -58,37 +60,37 @@ export function KPIGrid({ metrics, loading, isRefreshing, error }: KPIGridProps)
       {isRefreshing && (
         <div className="absolute -top-6 right-0 flex items-center gap-2 text-xs text-muted-foreground">
           <div className="h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-          Updating...
+          {t('updating')}
         </div>
       )}
       <div className={`grid gap-4 md:grid-cols-2 lg:grid-cols-3 ${isRefreshing ? 'opacity-70' : ''}`}>
       <KPICard
-        title="Total Requests"
+        title={t('totalRequests')}
         value={formatNumber(metrics.totalRequests)}
         icon={Activity}
       />
       <KPICard
-        title="Successful Requests"
+        title={t('successfulRequests')}
         value={formatNumber(metrics.successfulRequests)}
         icon={CheckCircle}
       />
       <KPICard
-        title="Fill Rate"
+        title={t('fillRate')}
         value={formatPercent(metrics.fillRate)}
         icon={BarChart3}
       />
       <KPICard
-        title="Total Impressions"
+        title={t('totalImpressions')}
         value={formatNumber(metrics.totalImpressions)}
         icon={Eye}
       />
       <KPICard
-        title="Total Clicks"
+        title={t('totalClicks')}
         value={formatNumber(metrics.totalClicks)}
         icon={MousePointer}
       />
       <KPICard
-        title="Click-Through Rate"
+        title={t('clickThroughRate')}
         value={formatPercent(metrics.clickThroughRate)}
         icon={Target}
       />
