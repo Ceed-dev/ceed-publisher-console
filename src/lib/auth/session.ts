@@ -13,20 +13,21 @@ export async function createSessionCookie(idToken: string): Promise<string> {
 
 export async function verifySessionCookie(
   sessionCookie: string
-): Promise<{ uid: string; email: string } | null> {
+): Promise<{ uid: string; email: string; displayName?: string } | null> {
   try {
     const auth = getAdminAuth();
     const decodedClaims = await auth.verifySessionCookie(sessionCookie, true);
     return {
       uid: decodedClaims.uid,
       email: decodedClaims.email || '',
+      displayName: decodedClaims.name,
     };
   } catch {
     return null;
   }
 }
 
-export async function getSessionFromCookies(): Promise<{ uid: string; email: string } | null> {
+export async function getSessionFromCookies(): Promise<{ uid: string; email: string; displayName?: string } | null> {
   const cookieStore = await cookies();
   const sessionCookie = cookieStore.get(SESSION_COOKIE_NAME)?.value;
   if (!sessionCookie) return null;

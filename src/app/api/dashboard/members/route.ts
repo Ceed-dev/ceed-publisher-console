@@ -3,6 +3,8 @@ import { requireAuth } from '@/lib/auth/middleware';
 import { getMembersByOrg, getMemberByUserAndOrg, inviteMember } from '@/lib/db/members';
 import { memberInviteSchema } from '@/lib/validations/member';
 import { createAuditLog } from '@/lib/db/audit-logs';
+import { sendInviteEmail } from '@/lib/db/mail';
+import { getOrganization } from '@/lib/db/organizations';
 
 export async function GET(request: NextRequest) {
   const user = await requireAuth();
@@ -68,10 +70,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const existingMember = await getMembersByOrg(orgId);
-    if (existingMember.some((m) => m.email === validation.data.email)) {
+    const existingMembers = await getMembersByOrg(orgId);
+    const existingMember = existingMembers.find(
+      (m) => m.email === validation.data.email
+    );
+    if (existingMember) {
+      if (existingMember.status === 'active') {
+        return NextResponse.json(
+          { error: 'Member already exists in this organization' },
+          { status: 400 }
+        );
+      }
       return NextResponse.json(
-        { error: 'Member already exists in this organization' },
+        { error: 'A pending invitation already exists for this email. Use resend to send a new invitation.' },
         { status: 400 }
       );
     }
@@ -79,8 +90,21 @@ export async function POST(request: NextRequest) {
     const member = await inviteMember(
       orgId,
       validation.data.email,
-      validation.data.role
+      validation.data.role,
+      user.uid
     );
+
+    const org = await getOrganization(orgId);
+    if (org && member.inviteToken) {
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+      await sendInviteEmail({
+        to: member.email,
+        inviterEmail: user.email || '',
+        orgName: org.name,
+        inviteToken: member.inviteToken,
+        baseUrl,
+      });
+    }
 
     await createAuditLog({
       orgId,

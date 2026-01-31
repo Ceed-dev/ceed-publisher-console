@@ -17,6 +17,13 @@
       ]
     },
     {
+      "collectionGroup": "organizationMembers",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "inviteToken", "order": "ASCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "apps",
       "queryScope": "COLLECTION",
       "fields": [

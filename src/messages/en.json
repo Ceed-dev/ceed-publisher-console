@@ -93,6 +93,7 @@
     "emailAddress": "Email Address",
     "emailPlaceholder": "colleague@example.com",
     "role": "Role",
+    "status": "Status",
     "joined": "Joined",
     "actions": "Actions",
     "owner": "Owner",
@@ -103,7 +104,11 @@
     "analystDesc": "Analyst - View only",
     "sendInvite": "Send Invite",
     "inviteTitle": "Invite Team Member",
-    "confirmRemove": "Are you sure you want to remove this member?"
+    "confirmRemove": "Are you sure you want to remove this member?",
+    "pending": "Pending",
+    "active": "Active",
+    "resendInvite": "Resend Invite",
+    "inviteResent": "Invitation resent successfully"
   },
   "organization": {
     "title": "Organization Settings",
@@ -230,5 +235,29 @@
     "7days": "7 Days",
     "30days": "30 Days",
     "90days": "90 Days"
+  },
+  "invite": {
+    "title": "You're Invited!",
+    "description": "You've been invited to join {orgName}",
+    "invitedAs": "Invited as",
+    "role": "Role",
+    "signInWithGoogle": "Sign in with Google",
+    "signingIn": "Signing in...",
+    "invalidTitle": "Invalid Invitation",
+    "invalidDescription": "This invitation link is invalid or has been revoked. Please contact the person who invited you for a new link.",
+    "expiredTitle": "Invitation Expired",
+    "expiredDescription": "This invitation has expired. Please contact the person who invited you for a new link.",
+    "alreadyAcceptedTitle": "Already Accepted",
+    "alreadyAcceptedDescription": "This invitation has already been accepted. You can go to the dashboard to access your account.",
+    "acceptingTitle": "Accepting Invitation",
+    "acceptingDescription": "Please wait while we set up your account...",
+    "successTitle": "Welcome!",
+    "successDescription": "You've successfully joined the team. Redirecting to dashboard...",
+    "emailMismatchTitle": "Email Mismatch",
+    "emailMismatchDescription": "This invitation was sent to {email}. Please sign in with that email address to accept.",
+    "errorTitle": "Error",
+    "goToDashboard": "Go to Dashboard",
+    "currentlySignedInAs": "Currently signed in as",
+    "signOutAndRetry": "Please sign out and sign in with the correct email address."
   }
 }

@@ -5,3 +5,4 @@ export * from './app';
 export * from './request';
 export * from './event';
 export * from './analytics';
+export * from './ad';

@@ -13,6 +13,8 @@ export type AuditAction =
   | 'member.invite'
   | 'member.update'
   | 'member.remove'
+  | 'member.resend_invite'
+  | 'member.accept_invite'
   | 'settings.update';
 
 export interface AuditLog {

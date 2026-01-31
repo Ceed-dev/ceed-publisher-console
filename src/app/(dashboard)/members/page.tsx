@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useOrganization } from '@/hooks/use-organization';
 import { useMembersQuery, useInvalidateMembers } from '@/hooks/use-members-query';
-import { MemberRole } from '@/types/member';
+import { MemberRole, MemberStatus } from '@/types/member';
 import { Header } from '@/components/layout/header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,7 +24,7 @@ import {
   DialogContent,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { Plus, Loader2, Trash2 } from 'lucide-react';
+import { Plus, Loader2, Trash2, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 import { timestampToDate } from '@/lib/utils/timestamp';
 import { useTranslations } from 'next-intl';
@@ -38,6 +38,7 @@ export default function MembersPage() {
   const [inviteRole, setInviteRole] = useState<MemberRole>('developer');
   const [inviting, setInviting] = useState(false);
   const [inviteError, setInviteError] = useState('');
+  const [resendingId, setResendingId] = useState<string | null>(null);
   const t = useTranslations('team');
   const tCommon = useTranslations('common');
 
@@ -117,6 +118,30 @@ export default function MembersPage() {
     }
   };
 
+  const handleResendInvite = async (memberId: string) => {
+    if (!currentOrg) return;
+    setResendingId(memberId);
+
+    try {
+      const response = await fetch(`/api/dashboard/members/${memberId}/resend`, {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        alert(data.error || 'Failed to resend invitation');
+      } else {
+        alert(t('inviteResent'));
+        invalidateMembers(currentOrg.orgId);
+      }
+    } catch (error) {
+      console.error('Failed to resend invitation:', error);
+      alert('Failed to resend invitation');
+    } finally {
+      setResendingId(null);
+    }
+  };
+
   const getRoleBadge = (role: MemberRole) => {
     switch (role) {
       case 'owner':
@@ -127,6 +152,17 @@ export default function MembersPage() {
         return <Badge variant="outline">{t('analyst')}</Badge>;
       default:
         return <Badge variant="outline">{role}</Badge>;
+    }
+  };
+
+  const getStatusBadge = (status: MemberStatus) => {
+    switch (status) {
+      case 'active':
+        return <Badge variant="default" className="bg-green-500 hover:bg-green-600">{t('active')}</Badge>;
+      case 'pending':
+        return <Badge variant="outline" className="border-yellow-500 text-yellow-600">{t('pending')}</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
     }
   };
 
@@ -179,9 +215,10 @@ export default function MembersPage() {
           <TableHeader>
             <TableRow>
               <TableHead>{t('email')}</TableHead>
+              <TableHead>{t('status')}</TableHead>
               <TableHead>{t('role')}</TableHead>
               <TableHead>{t('joined')}</TableHead>
-              <TableHead className="w-[100px]">{t('actions')}</TableHead>
+              <TableHead className="w-[150px]">{t('actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -196,6 +233,9 @@ export default function MembersPage() {
                       </p>
                     )}
                   </div>
+                </TableCell>
+                <TableCell>
+                  {getStatusBadge(member.status || 'active')}
                 </TableCell>
                 <TableCell>
                   <Select
@@ -215,14 +255,31 @@ export default function MembersPage() {
                   {format(timestampToDate(member.meta.createdAt), 'MMM d, yyyy')}
                 </TableCell>
                 <TableCell>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleRemove(member.memberId)}
-                    className="text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-center gap-1">
+                    {member.status === 'pending' && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleResendInvite(member.memberId)}
+                        disabled={resendingId === member.memberId}
+                        title={t('resendInvite')}
+                      >
+                        {resendingId === member.memberId ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <RefreshCw className="h-4 w-4" />
+                        )}
+                      </Button>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRemove(member.memberId)}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

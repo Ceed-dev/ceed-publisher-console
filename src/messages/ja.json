@@ -93,6 +93,7 @@
     "emailAddress": "メールアドレス",
     "emailPlaceholder": "colleague@example.com",
     "role": "役割",
+    "status": "ステータス",
     "joined": "参加日",
     "actions": "操作",
     "owner": "オーナー",
@@ -103,7 +104,11 @@
     "analystDesc": "アナリスト - 閲覧のみ",
     "sendInvite": "招待を送信",
     "inviteTitle": "チームメンバーを招待",
-    "confirmRemove": "このメンバーを削除してもよろしいですか？"
+    "confirmRemove": "このメンバーを削除してもよろしいですか？",
+    "pending": "保留中",
+    "active": "アクティブ",
+    "resendInvite": "招待を再送",
+    "inviteResent": "招待を再送信しました"
   },
   "organization": {
     "title": "組織設定",
@@ -230,5 +235,29 @@
     "7days": "7日間",
     "30days": "30日間",
     "90days": "90日間"
+  },
+  "invite": {
+    "title": "招待されました！",
+    "description": "{orgName}に招待されています",
+    "invitedAs": "招待先メール",
+    "role": "役割",
+    "signInWithGoogle": "Googleでログイン",
+    "signingIn": "ログイン中...",
+    "invalidTitle": "無効な招待",
+    "invalidDescription": "この招待リンクは無効または取り消されています。招待者に新しいリンクを依頼してください。",
+    "expiredTitle": "招待の有効期限切れ",
+    "expiredDescription": "この招待は有効期限が切れています。招待者に新しいリンクを依頼してください。",
+    "alreadyAcceptedTitle": "既に承諾済み",
+    "alreadyAcceptedDescription": "この招待は既に承諾されています。ダッシュボードからアカウントにアクセスできます。",
+    "acceptingTitle": "招待を承諾中",
+    "acceptingDescription": "アカウントを設定しています...",
+    "successTitle": "ようこそ！",
+    "successDescription": "チームへの参加が完了しました。ダッシュボードにリダイレクトします...",
+    "emailMismatchTitle": "メールアドレスの不一致",
+    "emailMismatchDescription": "この招待は{email}宛てに送信されました。そのメールアドレスでログインしてください。",
+    "errorTitle": "エラー",
+    "goToDashboard": "ダッシュボードへ",
+    "currentlySignedInAs": "現在のログインアカウント",
+    "signOutAndRetry": "ログアウトして正しいメールアドレスでログインし直してください。"
   }
 }

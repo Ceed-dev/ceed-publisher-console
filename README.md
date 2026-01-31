@@ -4,6 +4,8 @@ A media-side dashboard for publishers integrating the Ceed Ads SDK. Partners can
 
 **Live URL:** https://ceed-publisher-console.vercel.app
 
+> **For AI/Developer Context**: See [CONTEXT.md](./CONTEXT.md) for system architecture, relationship with other Ceed repositories, and session history.
+
 ---
 
 ## Table of Contents
@@ -28,6 +30,7 @@ A media-side dashboard for publishers integrating the Ceed Ads SDK. Partners can
 | Google Authentication | Implemented |
 | Organization Management | Implemented |
 | Team Management (invite, roles) | Implemented |
+| Email Invitations (Firebase Trigger Email) | Implemented |
 | App Creation & Management | Implemented |
 | 6 KPI Analytics Dashboard | Implemented |
 | Request/Event Logging | Implemented |
@@ -76,9 +79,14 @@ A media-side dashboard for publishers integrating the Ceed Ads SDK. Partners can
   - **Owner** - Full access (manage org, apps, settings, members)
   - **Developer** - Manage apps and settings, view analytics/logs
   - **Analyst** - View analytics and logs only
-- Invite members by email
+- Invite members by email with automatic invitation emails
 - Change member roles
 - Remove members (with last-owner protection)
+- **Email Invitations:**
+  - Uses Firebase Trigger Email Extension
+  - Invitation links with secure tokens (7-day expiration)
+  - Resend invitations for pending members
+  - Status badges (Pending/Active) on team page
 
 ### App Management
 - Create apps with name and platform selection (Web, iOS)
@@ -146,6 +154,7 @@ A media-side dashboard for publishers integrating the Ceed Ads SDK. Partners can
   - Authentication enabled (Google provider)
   - Firestore database created
   - Admin SDK credentials
+  - [Trigger Email Extension](https://extensions.dev/extensions/firebase/firestore-send-email) installed and configured
 
 ### Installation
 
@@ -233,6 +242,9 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID=
 FIREBASE_ADMIN_PROJECT_ID=
 FIREBASE_ADMIN_CLIENT_EMAIL=
 FIREBASE_ADMIN_PRIVATE_KEY=
+
+# Base URL for invitation links
+NEXT_PUBLIC_BASE_URL=https://your-domain.com
 ```
 
 ---
@@ -262,9 +274,26 @@ FIREBASE_ADMIN_PRIVATE_KEY=
   email: string;
   displayName?: string;
   role: 'owner' | 'developer' | 'analyst';
+  status: 'pending' | 'active';
+  inviteToken?: string;          // Secure token for invitation acceptance
+  inviteExpiresAt?: Timestamp;   // 7-day expiration
+  invitedBy?: string;            // userId of inviter
   meta: {
     createdAt: Timestamp;
     updatedAt: Timestamp;
+    acceptedAt?: Timestamp;      // When invitation was accepted
+  };
+}
+```
+
+#### `mail` (Firebase Trigger Email Extension)
+```typescript
+{
+  to: string;
+  message: {
+    subject: string;
+    html: string;
+    text: string;
   };
 }
 ```
@@ -363,6 +392,14 @@ FIREBASE_ADMIN_PRIVATE_KEY=
 | GET | `/api/dashboard/apps/[appId]/logs/events` | List event logs |
 | GET/POST | `/api/dashboard/members` | List/Invite members |
 | PATCH/DELETE | `/api/dashboard/members/[memberId]` | Update/Remove member |
+| POST | `/api/dashboard/members/[memberId]/resend` | Resend invitation email |
+
+### Invitation APIs (Public)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/invites/[token]` | Validate invitation token |
+| POST | `/api/invites/[token]/accept` | Accept invitation (requires auth) |
 
 ### SDK APIs (Public)
 

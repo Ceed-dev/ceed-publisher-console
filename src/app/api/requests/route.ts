@@ -1,3 +1,35 @@
+/**
+ * @fileoverview SDK Ad Request Endpoint
+ *
+ * Public API endpoint for SDK ad requests.
+ * Publishers call this endpoint to request ads for their apps.
+ *
+ * @route POST /api/requests
+ * @public
+ *
+ * @example Request Body
+ * ```json
+ * {
+ *   "appId": "app_123",
+ *   "platform": "web",
+ *   "language": "eng",
+ *   "contextText": "optional context for ad matching"
+ * }
+ * ```
+ *
+ * @example Response
+ * ```json
+ * {
+ *   "requestId": "req_456",
+ *   "ad": {
+ *     "adId": "ad_789",
+ *     "type": "banner",
+ *     "content": { ... }
+ *   }
+ * }
+ * ```
+ */
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getApp } from '@/lib/db/apps';
 import { createRequest } from '@/lib/db/requests';
@@ -5,13 +37,25 @@ import { getCorsHeaders, isOriginAllowed } from '@/lib/utils/cors';
 import { processContextText } from '@/lib/utils/context-text';
 import { z } from 'zod';
 
+/**
+ * Zod schema for ad request validation
+ */
 const requestSchema = z.object({
+  /** Publisher app identifier */
   appId: z.string(),
+  /** Platform making the request */
   platform: z.enum(['web', 'ios']),
+  /** Requested language for ad content */
   language: z.enum(['eng', 'jpn']),
+  /** Optional context for ad matching */
   contextText: z.string().optional(),
 });
 
+/**
+ * Handle CORS preflight requests
+ * @param request - Incoming request
+ * @returns Empty response with CORS headers
+ */
 export async function OPTIONS(request: NextRequest) {
   const origin = request.headers.get('Origin');
   return new NextResponse(null, {
@@ -20,6 +64,21 @@ export async function OPTIONS(request: NextRequest) {
   });
 }
 
+/**
+ * Process ad request from SDK
+ *
+ * @description
+ * Validates the request, checks app configuration, processes context,
+ * and returns an ad response. Logs the request for analytics.
+ *
+ * @param request - Incoming POST request with ad request payload
+ * @returns Ad response or error
+ *
+ * @throws 400 - Invalid request body or unsupported platform/language
+ * @throws 403 - App suspended or origin not allowed
+ * @throws 404 - App not found
+ * @throws 500 - Internal server error
+ */
 export async function POST(request: NextRequest) {
   const origin = request.headers.get('Origin');
   const startTime = Date.now();
