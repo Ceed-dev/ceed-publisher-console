@@ -242,7 +242,7 @@ RESOURCE_ERROR at /deployments/firebase-ext-firestore-send-email/resources/proce
 **Extension Configuration Used:**
 - Cloud Functions location: Tokyo (asia-northeast1)
 - Firestore Instance Location: asia-northeast1
-- SMTP connection URI: `smtps://resend:re_4wcS5SY1_LZKT9xRun9gLpxenAYUBoryg@smtp.resend.com:465`
+- SMTP connection URI: `smtps://resend:<RESEND_API_KEY>@smtp.resend.com:465`
 - Email documents collection: `mail`
 - Default FROM address: `noreply@0xqube.xyz`
 
