@@ -186,6 +186,114 @@ The system is designed to support additional ad formats in the future:
 
 ## Session History
 
+### 2026-02-01: Email Invitation System - Custom Domain Setup (IN PROGRESS)
+
+#### Background
+The team invitation feature sends emails via Firebase Trigger Email from Firestore extension using Resend as the SMTP provider. Previously, emails were sent from `onboarding@resend.dev` (Resend's default domain). The goal was to set up a custom domain `0xqube.xyz` so emails come from `noreply@0xqube.xyz` for better branding and deliverability.
+
+#### What Was Completed
+
+1. **Resend Domain Verification** ✅
+   - Added custom domain `0xqube.xyz` in Resend dashboard
+   - Configured all required DNS records in Vercel:
+     - **DKIM**: `resend._domainkey` TXT record → Verified
+     - **MX**: `send` MX record (feedback-smtp.ap-northeast-1.amazonses.com, priority 10) → Verified
+     - **SPF**: `send` TXT record (v=spf1 include:amazonses.com ~all) → Verified
+     - **DMARC**: `_dmarc` TXT record (v=DMARC1; p=none;) → Verified
+   - Domain status in Resend: **Verified** ✅
+   - Region: Tokyo (ap-northeast-1)
+
+2. **Vercel Environment Variable** ✅
+   - Added `NEXT_PUBLIC_BASE_URL` = `https://ceed-publisher-console.vercel.app`
+   - Redeployed application (deployment ID: AqYAp63cn)
+   - This ensures invitation emails contain correct production URLs instead of `localhost:3000`
+
+3. **IAM Permissions Added** ✅
+   - Added roles to `741640952617-compute@developer.gserviceaccount.com`:
+     - Cloud Functions Developer
+     - Eventarc Event Receiver
+     - Service Account User
+   - Added roles to `741640952617@cloudbuild.gserviceaccount.com`:
+     - Cloud Build Service Account
+     - Cloud Functions Developer
+     - Service Account User
+
+#### Current Problem: Firebase Extension Installation Fails
+
+**Error Message:**
+```
+RESOURCE_ERROR at /deployments/firebase-ext-firestore-send-email/resources/processQueue:
+{
+  "ResourceType": "gcp-types/cloudfunctions-v2beta:projects.locations.functions",
+  "ResourceErrorCode": "400",
+  "ResourceErrorMessage": "Build failed with status: FAILURE. Could not build the function due to a missing permission on the build service account."
+}
+```
+
+**Root Cause Analysis:**
+- The Firebase Trigger Email Extension fails to deploy its Cloud Function
+- Even after adding IAM permissions, the Cloud Build process cannot complete
+- The function shows "Unknown trigger" in Firebase Console, indicating Eventarc trigger was not properly created
+- Possible causes:
+  1. IAM permission propagation delay (can take up to 7 minutes)
+  2. Different service account used for asia-northeast1 region builds
+  3. Organization-level policy restrictions
+
+**Extension Configuration Used:**
+- Cloud Functions location: Tokyo (asia-northeast1)
+- Firestore Instance Location: asia-northeast1
+- SMTP connection URI: `smtps://resend:re_4wcS5SY1_LZKT9xRun9gLpxenAYUBoryg@smtp.resend.com:465`
+- Email documents collection: `mail`
+- Default FROM address: `noreply@0xqube.xyz`
+
+#### What Needs to Be Done Next
+
+1. **Option A: Wait and Retry**
+   - IAM changes can take time to propagate
+   - Wait 10-15 minutes then click "Retry installing" in Firebase Console
+
+2. **Option B: Try us-central1 Region**
+   - Uninstall the current extension
+   - Reinstall with Cloud Functions location set to `us-central1` instead of `asia-northeast1`
+   - This may use different service accounts that already have proper permissions
+
+3. **Option C: Add More IAM Permissions**
+   - Check Google Cloud Console → Cloud Build → Settings
+   - Ensure all required APIs are enabled:
+     - Cloud Build API
+     - Cloud Functions API
+     - Eventarc API
+     - Artifact Registry API
+   - Grant `roles/cloudbuild.builds.builder` to the Cloud Build service account
+
+4. **Option D: Manual Investigation**
+   - View Cloud Build logs at: https://console.cloud.google.com/cloud-build/builds;region=asia-northeast1?project=741640952617
+   - Check for specific permission errors
+   - May need to grant permissions to additional service accounts
+
+#### Files Involved
+- `src/lib/db/mail.ts` - Email sending function (creates documents in `mail` collection)
+- `src/app/api/dashboard/members/route.ts` - Invitation API (calls sendInviteEmail)
+- `src/app/api/dashboard/members/[memberId]/resend/route.ts` - Resend invitation API
+- `src/app/invite/accept/page.tsx` - Invitation acceptance page
+
+#### Firestore Data
+- Documents are correctly being created in `mail` collection when invitations are sent
+- The issue is that Firebase Extension is not processing these documents
+- Example document structure:
+  ```json
+  {
+    "to": "kimura.shungo@gmail.com",
+    "message": {
+      "subject": "You've been invited to join Ceed Dev on Ceed Publisher Console",
+      "html": "...",
+      "text": "..."
+    }
+  }
+  ```
+
+---
+
 ### 2026-01-31
 - Initial CONTEXT.md created
 - Documented system architecture and two-dashboard model
