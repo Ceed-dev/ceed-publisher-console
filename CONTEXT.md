@@ -1,6 +1,6 @@
 # Ceed Publisher Console - Project Context
 
-> **Last Updated**: 2026-02-02
+> **Last Updated**: 2026-02-02 15:45 JST
 
 ## Purpose and Role
 
@@ -186,7 +186,53 @@ The system is designed to support additional ad formats in the future:
 
 ## Session History
 
-### 2026-02-02: Firebase Extension Installation - Root Cause Found and Fixed ✅
+### 2026-02-02: Email Sending Test - Extension Trigger Not Working ⚠️
+
+#### Test Result
+Attempted to send an invitation email via Publisher Console. **Email was NOT delivered.**
+
+#### Investigation Findings
+
+1. **Mail document created correctly in Firestore**:
+   - Collection: `mail`
+   - Document ID: `F17i6zuC6lAOEjHnL5Kc`
+   - Fields: `to`, `message.subject`, `message.html`, `message.text` all present
+   - Recipient: `kimura.shungo@gmail.com`
+   - Invite URL: `https://ceed-publisher-console.vercel.app/invite/accept?token=...` ✅
+
+2. **`delivery` field is MISSING**:
+   - This indicates the Firebase Extension is **NOT processing** the document
+   - The Cloud Function is not being triggered by Firestore document creation
+
+3. **Extension Configuration Verified**:
+   - Email documents collection: `mail` ✅
+   - SMTP connection URI: `smtps://resend:<API_KEY>@smtp.resend.com:465` ✅
+   - Cloud Functions logs: **Empty** (no activity)
+
+#### Root Cause
+The "Unknown trigger" issue noted in the previous session was not just a display bug. The Firestore trigger for the Cloud Function (`ext-firestore-send-email-processqueue`) is **not properly configured**, meaning the function never fires when documents are created in the `mail` collection.
+
+#### Resolution In Progress
+Attempting to reinstall the Firebase Extension to fix the trigger configuration:
+1. Uninstall current extension
+2. Reinstall with correct settings:
+   - Cloud Functions location: `asia-northeast1`
+   - SMTP connection URI: `smtps://resend:<NEW_API_KEY>@smtp.resend.com:465`
+   - Email documents collection: `mail`
+   - Default FROM address: `noreply@0xqube.xyz`
+
+#### Security Note
+⚠️ **Resend API Key was exposed** during debugging. The key needs to be rotated in Resend dashboard after fixing the extension.
+
+#### Next Steps
+1. Complete extension reinstallation
+2. Rotate Resend API key
+3. Test email sending again
+4. Verify `delivery.state: "SUCCESS"` appears in mail document
+
+---
+
+### 2026-02-02 (Earlier): Firebase Extension Installation - Root Cause Found and Fixed ✅
 
 #### Summary
 Identified and resolved the root cause of the Firebase Trigger Email Extension installation failure. Extension is now successfully installed.
