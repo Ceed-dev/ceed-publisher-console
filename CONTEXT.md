@@ -1,6 +1,6 @@
 # Ceed Publisher Console - Project Context
 
-> **Last Updated**: 2026-01-31
+> **Last Updated**: 2026-02-02
 
 ## Purpose and Role
 
@@ -186,7 +186,60 @@ The system is designed to support additional ad formats in the future:
 
 ## Session History
 
-### 2026-02-01: Email Invitation System - Custom Domain Setup (IN PROGRESS)
+### 2026-02-02: Firebase Extension Installation - Root Cause Found and Fixed
+
+#### Summary
+Identified and resolved the root cause of the Firebase Trigger Email Extension installation failure.
+
+#### Root Cause Identified
+By examining Cloud Build logs via `gcloud builds describe`, found the actual error:
+
+```
+Access to bucket gcf-v2-sources-741640952617-asia-northeast1 denied.
+You must grant Storage Object Viewer permission to 741640952617-compute@developer.gserviceaccount.com.
+```
+
+The Cloud Build process was failing because the compute service account couldn't read the source code from the GCS bucket.
+
+#### Permissions Added
+
+1. **Storage Object Viewer** on bucket `gcf-v2-sources-741640952617-asia-northeast1`:
+   ```bash
+   gcloud storage buckets add-iam-policy-binding gs://gcf-v2-sources-741640952617-asia-northeast1 \
+     --member="serviceAccount:741640952617-compute@developer.gserviceaccount.com" \
+     --role="roles/storage.objectViewer"
+   ```
+
+2. **Logs Writer** for Cloud Logging (recommended in build warnings):
+   ```bash
+   gcloud projects add-iam-policy-binding ceed-ads \
+     --member="serviceAccount:741640952617-compute@developer.gserviceaccount.com" \
+     --role="roles/logging.logWriter"
+   ```
+
+#### Current Status
+- Permissions granted successfully
+- Firebase Extension retry installation initiated via Firebase Console
+- Awaiting installation completion (3-5 minutes expected)
+
+#### Debugging Commands Used
+```bash
+# List Firebase extensions
+firebase ext:list --project ceed-ads
+
+# List recent Cloud Build failures
+gcloud builds list --region=asia-northeast1 --limit=10
+
+# Get detailed build info (includes base64-encoded error messages)
+gcloud builds describe <BUILD_ID> --region=asia-northeast1 --format="yaml"
+
+# Decode base64 error message
+echo "<BASE64_STRING>" | base64 -d
+```
+
+---
+
+### 2026-02-01: Email Invitation System - Custom Domain Setup
 
 #### Background
 The team invitation feature sends emails via Firebase Trigger Email from Firestore extension using Resend as the SMTP provider. Previously, emails were sent from `onboarding@resend.dev` (Resend's default domain). The goal was to set up a custom domain `0xqube.xyz` so emails come from `noreply@0xqube.xyz` for better branding and deliverability.
@@ -218,58 +271,12 @@ The team invitation feature sends emails via Firebase Trigger Email from Firesto
      - Cloud Functions Developer
      - Service Account User
 
-#### Current Problem: Firebase Extension Installation Fails
-
-**Error Message:**
-```
-RESOURCE_ERROR at /deployments/firebase-ext-firestore-send-email/resources/processQueue:
-{
-  "ResourceType": "gcp-types/cloudfunctions-v2beta:projects.locations.functions",
-  "ResourceErrorCode": "400",
-  "ResourceErrorMessage": "Build failed with status: FAILURE. Could not build the function due to a missing permission on the build service account."
-}
-```
-
-**Root Cause Analysis:**
-- The Firebase Trigger Email Extension fails to deploy its Cloud Function
-- Even after adding IAM permissions, the Cloud Build process cannot complete
-- The function shows "Unknown trigger" in Firebase Console, indicating Eventarc trigger was not properly created
-- Possible causes:
-  1. IAM permission propagation delay (can take up to 7 minutes)
-  2. Different service account used for asia-northeast1 region builds
-  3. Organization-level policy restrictions
-
-**Extension Configuration Used:**
+#### Extension Configuration
 - Cloud Functions location: Tokyo (asia-northeast1)
 - Firestore Instance Location: asia-northeast1
 - SMTP connection URI: `smtps://resend:<RESEND_API_KEY>@smtp.resend.com:465`
 - Email documents collection: `mail`
 - Default FROM address: `noreply@0xqube.xyz`
-
-#### What Needs to Be Done Next
-
-1. **Option A: Wait and Retry**
-   - IAM changes can take time to propagate
-   - Wait 10-15 minutes then click "Retry installing" in Firebase Console
-
-2. **Option B: Try us-central1 Region**
-   - Uninstall the current extension
-   - Reinstall with Cloud Functions location set to `us-central1` instead of `asia-northeast1`
-   - This may use different service accounts that already have proper permissions
-
-3. **Option C: Add More IAM Permissions**
-   - Check Google Cloud Console → Cloud Build → Settings
-   - Ensure all required APIs are enabled:
-     - Cloud Build API
-     - Cloud Functions API
-     - Eventarc API
-     - Artifact Registry API
-   - Grant `roles/cloudbuild.builds.builder` to the Cloud Build service account
-
-4. **Option D: Manual Investigation**
-   - View Cloud Build logs at: https://console.cloud.google.com/cloud-build/builds;region=asia-northeast1?project=741640952617
-   - Check for specific permission errors
-   - May need to grant permissions to additional service accounts
 
 #### Files Involved
 - `src/lib/db/mail.ts` - Email sending function (creates documents in `mail` collection)
@@ -279,7 +286,6 @@ RESOURCE_ERROR at /deployments/firebase-ext-firestore-send-email/resources/proce
 
 #### Firestore Data
 - Documents are correctly being created in `mail` collection when invitations are sent
-- The issue is that Firebase Extension is not processing these documents
 - Example document structure:
   ```json
   {
