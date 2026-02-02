@@ -186,10 +186,10 @@ The system is designed to support additional ad formats in the future:
 
 ## Session History
 
-### 2026-02-02: Firebase Extension Installation - Root Cause Found and Fixed
+### 2026-02-02: Firebase Extension Installation - Root Cause Found and Fixed ✅
 
 #### Summary
-Identified and resolved the root cause of the Firebase Trigger Email Extension installation failure.
+Identified and resolved the root cause of the Firebase Trigger Email Extension installation failure. Extension is now successfully installed.
 
 #### Root Cause Identified
 By examining Cloud Build logs via `gcloud builds describe`, found the actual error:
@@ -217,10 +217,24 @@ The Cloud Build process was failing because the compute service account couldn't
      --role="roles/logging.logWriter"
    ```
 
-#### Current Status
-- Permissions granted successfully
-- Firebase Extension retry installation initiated via Firebase Console
-- Awaiting installation completion (3-5 minutes expected)
+#### Installation Result
+- ✅ **Extension installed successfully** (firebase/firestore-send-email@0.2.4)
+- Firebase Console shows "Extension is up to date"
+- Cloud Function `ext-firestore-send-email-processqueue` deployed to asia-northeast1
+
+#### Note: Functions Tab Shows "Unknown trigger"
+- The Firebase Functions dashboard shows "Unknown trigger" for the deployed function
+- This may be a Firebase Console display issue
+- Actual functionality needs to be verified by sending a test invitation email
+
+#### Next Step: Functional Testing
+To verify the extension works correctly:
+1. Send an invitation email via Publisher Console (Members → Invite Member)
+2. Check Firestore `mail` collection for the new document
+3. Verify `delivery` field is added by the extension:
+   - `delivery.state: "SUCCESS"` → Email sent successfully
+   - `delivery.state: "ERROR"` → Check error details
+4. Confirm email arrives at the recipient's inbox
 
 #### Debugging Commands Used
 ```bash
@@ -235,6 +249,9 @@ gcloud builds describe <BUILD_ID> --region=asia-northeast1 --format="yaml"
 
 # Decode base64 error message
 echo "<BASE64_STRING>" | base64 -d
+
+# Check Cloud Function details (if trigger issues persist)
+gcloud functions describe ext-firestore-send-email-processqueue --region=asia-northeast1 --project=ceed-ads
 ```
 
 ---
