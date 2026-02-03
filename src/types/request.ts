@@ -3,6 +3,33 @@ import { SupportedLanguage } from './app';
 
 export type RequestStatus = 'success' | 'error' | 'no_fill';
 
+export type AlgorithmVersion = 'v1' | 'v2';
+
+export interface V2PhaseTimings {
+  opportunityMs: number;
+  candidateMs: number;
+  rankingMs: number;
+  totalMs: number;
+}
+
+export interface V2ScoreBreakdown {
+  baseScore: number;
+  relevanceBoost: number;
+  fatiguePenalty: number;
+  formatPenalty: number;
+  explorationBonus: number;
+}
+
+export interface V2DecisionMeta {
+  oppScore: number;
+  oppIntent: string;
+  candidateCount: number;
+  finalScore: number;
+  scoreBreakdown: V2ScoreBreakdown;
+  fallbackUsed: boolean;
+  phaseTimings: V2PhaseTimings;
+}
+
 export interface AdRequest {
   requestId: string;
   appId: string;
@@ -20,6 +47,8 @@ export interface AdRequest {
   meta: {
     createdAt: FirebaseTimestamp;
   };
+  algorithmVersion?: AlgorithmVersion;
+  v2Meta?: V2DecisionMeta;
 }
 
 export interface RequestFilters {
