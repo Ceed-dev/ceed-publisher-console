@@ -1,6 +1,6 @@
 # Ceed Publisher Console - Project Context
 
-> **Last Updated**: 2026-02-02 15:45 JST
+> **Last Updated**: 2026-02-03 12:30 JST
 
 ## Purpose and Role
 
@@ -360,6 +360,28 @@ The team invitation feature sends emails via Firebase Trigger Email from Firesto
     }
   }
   ```
+
+---
+
+### 2026-02-03: v2 Algorithm Metadata Types Added
+
+#### What Was Done
+- Added AlgorithmVersion type ('v1' | 'v2')
+- Added V2PhaseTimings interface for performance tracking
+- Added V2ScoreBreakdown interface for ranking transparency
+- Added V2DecisionMeta interface for complete v2 logging
+- Extended AdRequest with algorithmVersion and v2Meta fields
+
+#### Why
+Support for displaying v2 algorithm metadata in request logs.
+Publishers can now see which algorithm version was used and
+detailed scoring information for each ad request.
+
+#### Files Modified
+- src/types/request.ts
+
+#### Commits
+- 4331bec: feat(requests): add v2 algorithm metadata types
 
 ---
 
